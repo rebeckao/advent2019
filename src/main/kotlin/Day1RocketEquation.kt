@@ -6,7 +6,7 @@ class Day1RocketEquation {
             .mapToInt(Int::toInt)
             .map { it / 3 }
             .map { it - 2 }
-            .sum();
+            .sum()
     }
 
     fun totalFuelRequirements(masses: List<Int>): Int {
@@ -16,7 +16,7 @@ class Day1RocketEquation {
             .sum()
     }
 
-    fun totalFuelRequirement(mass: Int): Int {
+    private fun totalFuelRequirement(mass: Int): Int {
         var extraFuel = fuelRequirementForMass(mass)
         var totalFuelRequirement = extraFuel
         while (extraFuel > 0) {
@@ -26,7 +26,7 @@ class Day1RocketEquation {
         return totalFuelRequirement
     }
 
-    fun fuelRequirementForMass(mass: Int): Int {
-        return mass/3 -2;
+    private fun fuelRequirementForMass(mass: Int): Int {
+        return mass/3 -2
     }
 }
