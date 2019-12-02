@@ -29,4 +29,13 @@ internal class Day2ProgramAlarmTest {
         programArray[2] = 2
         Assertions.assertEquals(3101878, Day2ProgramAlarm().programResult(programArray))
     }
+
+    @Test
+    fun programParameters() {
+        val programArray = Files.lines(Paths.get("./src/test/resources/day2.txt"))
+            .flatMap { it.split(",").stream()}
+            .mapToInt{it.toInt()}
+            .toArray()
+        Assertions.assertEquals(8444, Day2ProgramAlarm().paramsRequiredForProgramResult(19690720, programArray))
+    }
 }
