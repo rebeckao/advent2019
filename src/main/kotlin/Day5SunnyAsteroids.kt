@@ -16,17 +16,49 @@ class Day5SunnyAsteroids {
                 continue
             }
 
+            val param1 =
+                if (opCodeString[2] == '1') program[currentPosition + 1] else program[program[currentPosition + 1]]
+
             if (currentOperation == "04") {
-                output = program[program[currentPosition + 1]]
+                output = param1
                 currentPosition += 2
                 continue
             }
 
-            val resultPos = program[currentPosition + 3]
-            val param1 =
-                if (opCodeString[2] == '1') program[currentPosition + 1] else program[program[currentPosition + 1]]
             val param2 =
                 if (opCodeString[1] == '1') program[currentPosition + 2] else program[program[currentPosition + 2]]
+
+            if (currentOperation == "05") {
+                if (param1 != 0) {
+                    currentPosition = param2
+                } else {
+                    currentPosition += 3
+                }
+                continue
+            }
+
+            if (currentOperation == "06") {
+                if (param1 == 0) {
+                    currentPosition = param2
+                } else {
+                    currentPosition += 3
+                }
+                continue
+            }
+
+            val resultPos = program[currentPosition + 3]
+
+            if (currentOperation == "07") {
+                program[resultPos] = if (param1 < param2) 1 else 0
+                currentPosition += 4
+                continue
+            }
+
+            if (currentOperation == "08") {
+                program[resultPos] = if (param1 == param2) 1 else 0
+                currentPosition += 4
+                continue
+            }
 
             if (currentOperation == "01") {
                 program[resultPos] = param1 + param2
