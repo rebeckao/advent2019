@@ -5,6 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.*
 
 internal class Day5SunnyAsteroidsTest {
 
@@ -19,7 +20,9 @@ internal class Day5SunnyAsteroidsTest {
     )
     fun programResultExamples(program: String, input: Int, expected: Int) {
         val programArray = program.split(",").stream().mapToInt { it.toInt() }.toArray()
-        Assertions.assertEquals(expected, Day5SunnyAsteroids().programResult(programArray, input))
+        val inputQueue = ArrayDeque<Int>()
+        inputQueue.add(input)
+        Assertions.assertEquals(expected, Day5SunnyAsteroids().programResult(programArray, inputQueue))
     }
 
     @Test
@@ -28,7 +31,9 @@ internal class Day5SunnyAsteroidsTest {
             .flatMap { it.split(",").stream() }
             .mapToInt { it.toInt() }
             .toArray()
-        Assertions.assertEquals(16434972, Day5SunnyAsteroids().programResult(programArray, 1))
+        val inputQueue = ArrayDeque<Int>()
+        inputQueue.add(1)
+        Assertions.assertEquals(16434972, Day5SunnyAsteroids().programResult(programArray, inputQueue))
     }
 
     @ParameterizedTest
@@ -55,7 +60,9 @@ internal class Day5SunnyAsteroidsTest {
     )
     fun programResultExamplesForMoreOpcodes(program: String, input: Int, expected: Int) {
         val programArray = program.split(",").stream().mapToInt { it.toInt() }.toArray()
-        Assertions.assertEquals(expected, Day5SunnyAsteroids().programResult(programArray, input))
+        val inputQueue = ArrayDeque<Int>()
+        inputQueue.add(input)
+        Assertions.assertEquals(expected, Day5SunnyAsteroids().programResult(programArray, inputQueue))
     }
 
     @Test
@@ -64,6 +71,8 @@ internal class Day5SunnyAsteroidsTest {
             .flatMap { it.split(",").stream() }
             .mapToInt { it.toInt() }
             .toArray()
-        Assertions.assertEquals(16694270, Day5SunnyAsteroids().programResult(programArray, 5))
+        val inputQueue = ArrayDeque<Int>()
+        inputQueue.add(5)
+        Assertions.assertEquals(16694270, Day5SunnyAsteroids().programResult(programArray, inputQueue))
     }
 }

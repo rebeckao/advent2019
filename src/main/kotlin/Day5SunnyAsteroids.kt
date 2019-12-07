@@ -1,5 +1,7 @@
+import java.util.*
+
 class Day5SunnyAsteroids {
-    fun programResult(program: IntArray, input: Int): Int {
+    fun programResult(program: IntArray, input: Queue<Int>): Int {
         var currentPosition = 0
         var output = 0
         while (currentPosition < program.size) {
@@ -11,7 +13,7 @@ class Day5SunnyAsteroids {
             }
 
             if (currentOperation == "03") {
-                program[program[currentPosition + 1]] = input
+                program[program[currentPosition + 1]] = input.poll()
                 currentPosition += 2
                 continue
             }
