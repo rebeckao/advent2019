@@ -1,6 +1,6 @@
-import java.lang.Math.max
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.max
 
 class Day7AmplificationCircuit {
     fun maxThusterSignal(program: IntArray): Int {
@@ -29,7 +29,7 @@ class Day7AmplificationCircuit {
         return maxOutput
     }
 
-    fun maxThrusterSignalWithFeedback(program: IntArray, phaseSettings: IntArray): Int {
+    private fun maxThrusterSignalWithFeedback(program: IntArray, phaseSettings: IntArray): Int {
         val programs: MutableList<IntArray> =
             mutableListOf(program.clone(), program.clone(), program.clone(), program.clone(), program.clone())
         val inputQueues: List<Queue<Int>> = phaseSettings.asSequence().map{toQueue(it)}.toList()
@@ -55,7 +55,7 @@ class Day7AmplificationCircuit {
         return queue
     }
 
-    fun possiblePhaseSettings(possibleSettings: Set<Int>): MutableList<IntArray> {
+    private fun possiblePhaseSettings(possibleSettings: Set<Int>): MutableList<IntArray> {
         val phaseSettings: MutableList<IntArray> = ArrayList()
         for (phase1 in possibleSettings) {
             for (phase2 in possibleSettings) {
@@ -86,9 +86,6 @@ class Day7AmplificationCircuit {
             }
 
             if (currentOperation == "03") {
-                if (input.size == 0) {
-                    println("currentPosition = ${currentPosition}")
-                }
                 program[program[currentPosition + 1]] = input.poll()
                 currentPosition += 2
                 continue
