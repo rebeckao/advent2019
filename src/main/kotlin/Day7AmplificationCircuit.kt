@@ -3,7 +3,7 @@ import kotlin.collections.ArrayList
 import kotlin.math.max
 
 class Day7AmplificationCircuit {
-    fun maxThusterSignal(program: IntArray): Int {
+    fun maxThrusterSignal(program: IntArray): Int {
         val phaseSettings: List<IntArray> = possiblePhaseSettings(setOf(0, 1, 2, 3, 4))
         var maxOutput = 0
         for (phaseSetting in phaseSettings) {
@@ -30,28 +30,30 @@ class Day7AmplificationCircuit {
     }
 
     private fun maxThrusterSignalWithFeedback(program: IntArray, phaseSettings: IntArray): Int {
-        val programs: MutableList<IntArray> =
-            mutableListOf(program.clone(), program.clone(), program.clone(), program.clone(), program.clone())
-        val inputQueues: List<Queue<Int>> = phaseSettings.asSequence().map{toQueue(it)}.toList()
+        val intComputers = IntRange(0, 4)
+            .map{IntComputer(toLongArray(program))}
+        val inputQueues: List<Queue<Long>> = phaseSettings.asSequence().map{toQueue(it)}.toList()
         val positions = intArrayOf(0, 0, 0, 0, 0)
         var output = 0
         while (true) {
-            for (i in 0 until programs.size) {
-                inputQueues[i].add(output)
-                val nextOutput = nextOutput(programs[i], inputQueues[i], positions[i])
+            for (i in intComputers.indices) {
+                inputQueues[i].add(output.toLong())
+                val nextOutput = intComputers[i].nextOutput(inputQueues[i], positions[i], 0)
                 if (nextOutput == null) {
                     return output
                 } else {
-                    output = nextOutput.first
-                    positions[i] = nextOutput.second
+                    output = nextOutput.output.toInt()
+                    positions[i] = nextOutput.position
                 }
             }
         }
     }
 
-    private fun toQueue(value: Int): ArrayDeque<Int> {
-        val queue = ArrayDeque<Int>()
-        queue.add(value)
+    private fun toLongArray(program: IntArray) = program.map { it.toLong() }.toLongArray()
+
+    private fun toQueue(value: Int): ArrayDeque<Long> {
+        val queue = ArrayDeque<Long>()
+        queue.add(value.toLong())
         return queue
     }
 
@@ -73,81 +75,5 @@ class Day7AmplificationCircuit {
             }
         }
         return phaseSettings
-    }
-
-    private fun nextOutput(program: IntArray, input: Queue<Int>, startPosition : Int): Pair<Int,Int>? {
-        var currentPosition = startPosition
-        while (currentPosition < program.size) {
-            val opCodeString = String.format("%05d", program[currentPosition])
-            val currentOperation = opCodeString.substring(3)
-
-            if (currentOperation == "99") {
-                return null
-            }
-
-            if (currentOperation == "03") {
-                program[program[currentPosition + 1]] = input.poll()
-                currentPosition += 2
-                continue
-            }
-
-            val param1 =
-                if (opCodeString[2] == '1') program[currentPosition + 1] else program[program[currentPosition + 1]]
-
-            if (currentOperation == "04") {
-                currentPosition+=2
-                return Pair(param1, currentPosition)
-            }
-
-            val param2 =
-                if (opCodeString[1] == '1') program[currentPosition + 2] else program[program[currentPosition + 2]]
-
-            if (currentOperation == "05") {
-                if (param1 != 0) {
-                    currentPosition = param2
-                } else {
-                    currentPosition += 3
-                }
-                continue
-            }
-
-            if (currentOperation == "06") {
-                if (param1 == 0) {
-                    currentPosition = param2
-                } else {
-                    currentPosition += 3
-                }
-                continue
-            }
-
-            val resultPos = program[currentPosition + 3]
-
-            if (currentOperation == "07") {
-                program[resultPos] = if (param1 < param2) 1 else 0
-                currentPosition += 4
-                continue
-            }
-
-            if (currentOperation == "08") {
-                program[resultPos] = if (param1 == param2) 1 else 0
-                currentPosition += 4
-                continue
-            }
-
-            if (currentOperation == "01") {
-                program[resultPos] = param1 + param2
-                currentPosition += 4
-                continue
-            }
-
-            if (currentOperation == "02") {
-                program[resultPos] = param1 * param2
-                currentPosition += 4
-                continue
-            }
-
-            throw IllegalStateException("op code = ${currentOperation}, at position $currentPosition")
-        }
-        throw IllegalStateException("No output and no halt")
     }
 }
