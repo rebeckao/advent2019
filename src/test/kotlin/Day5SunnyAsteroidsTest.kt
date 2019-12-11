@@ -18,9 +18,9 @@ internal class Day5SunnyAsteroidsTest {
             "1101,100,-1,7,4,7,99,42;0;99"
         ], delimiter = ';'
     )
-    fun programResultExamples(program: String, input: Int, expected: Int) {
-        val programArray = program.split(",").stream().mapToInt { it.toInt() }.toArray()
-        val inputQueue = ArrayDeque<Int>()
+    fun programResultExamples(program: String, input: Long, expected: Long) {
+        val programArray = program.split(",").stream().mapToLong { it.toLong() }.toArray()
+        val inputQueue = ArrayDeque<Long>()
         inputQueue.add(input)
         Assertions.assertEquals(expected, Day5SunnyAsteroids().programResult(programArray, inputQueue))
     }
@@ -29,9 +29,9 @@ internal class Day5SunnyAsteroidsTest {
     fun programResult() {
         val programArray = Files.lines(Paths.get("./src/test/resources/day5.txt"))
             .flatMap { it.split(",").stream() }
-            .mapToInt { it.toInt() }
+            .mapToLong() { it.toLong() }
             .toArray()
-        val inputQueue = ArrayDeque<Int>()
+        val inputQueue = ArrayDeque<Long>()
         inputQueue.add(1)
         Assertions.assertEquals(16434972, Day5SunnyAsteroids().programResult(programArray, inputQueue))
     }
@@ -58,9 +58,9 @@ internal class Day5SunnyAsteroidsTest {
             "3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99;10;1001"
         ], delimiter = ';'
     )
-    fun programResultExamplesForMoreOpcodes(program: String, input: Int, expected: Int) {
-        val programArray = program.split(",").stream().mapToInt { it.toInt() }.toArray()
-        val inputQueue = ArrayDeque<Int>()
+    fun programResultExamplesForMoreOpcodes(program: String, input: Long, expected: Long) {
+        val programArray = program.split(",").stream().mapToLong() { it.toLong() }.toArray()
+        val inputQueue = ArrayDeque<Long>()
         inputQueue.add(input)
         Assertions.assertEquals(expected, Day5SunnyAsteroids().programResult(programArray, inputQueue))
     }
@@ -69,9 +69,9 @@ internal class Day5SunnyAsteroidsTest {
     fun programResultForMoreOpcodes() {
         val programArray = Files.lines(Paths.get("./src/test/resources/day5.txt"))
             .flatMap { it.split(",").stream() }
-            .mapToInt { it.toInt() }
+            .mapToLong { it.toLong() }
             .toArray()
-        val inputQueue = ArrayDeque<Int>()
+        val inputQueue = ArrayDeque<Long>()
         inputQueue.add(5)
         Assertions.assertEquals(16694270, Day5SunnyAsteroids().programResult(programArray, inputQueue))
     }

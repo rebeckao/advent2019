@@ -8,8 +8,8 @@ class Day9SensorBoost {
         var relativeBase: Int
         val intComputer = IntComputer(program)
         var currentOutput = intComputer.nextOutput(input, 0, 0)
-        while (currentOutput != null) {
-            outputs.add(currentOutput.output)
+        while (!currentOutput.done) {
+            outputs.add(currentOutput.output!!)
             currentPosition = currentOutput.position
             relativeBase = currentOutput.relativeBase
             currentOutput = intComputer.nextOutput(input, currentPosition, relativeBase)

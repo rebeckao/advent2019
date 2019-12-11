@@ -6,7 +6,7 @@ class IntComputer(private var program: LongArray) {
         input: Queue<Long>,
         startPosition: Int,
         relativeBaseStart: Int
-    ): CurrentState? {
+    ): CurrentState {
         var relativeBase = relativeBaseStart
         var currentPosition = startPosition
         while (currentPosition < program.size) {
@@ -14,7 +14,7 @@ class IntComputer(private var program: LongArray) {
             val currentOperation = opCodeString.substring(3)
 
             if (currentOperation == "99") {
-                return null
+                return CurrentState(null, currentPosition, relativeBase, true)
             }
 
             if (currentOperation == "03") {
@@ -30,7 +30,7 @@ class IntComputer(private var program: LongArray) {
 
             if (currentOperation == "04") {
                 currentPosition += 2
-                return CurrentState(param1, currentPosition, relativeBase)
+                return CurrentState(param1, currentPosition, relativeBase, false)
             }
 
             if (currentOperation == "09") {
@@ -121,5 +121,5 @@ class IntComputer(private var program: LongArray) {
         }
     }
 
-    data class CurrentState(val output: Long, val position: Int, val relativeBase: Int)
+    data class CurrentState(val output: Long?, val position: Int, val relativeBase: Int, val done: Boolean)
 }

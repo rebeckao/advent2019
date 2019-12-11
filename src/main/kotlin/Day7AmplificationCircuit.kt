@@ -3,20 +3,20 @@ import kotlin.collections.ArrayList
 import kotlin.math.max
 
 class Day7AmplificationCircuit {
-    fun maxThrusterSignal(program: IntArray): Int {
+    fun maxThrusterSignal(program: LongArray): Int {
         val phaseSettings: List<IntArray> = possiblePhaseSettings(setOf(0, 1, 2, 3, 4))
-        var maxOutput = 0
+        var maxOutput = 0L
         for (phaseSetting in phaseSettings) {
-            var output = 0
+            var output = 0L
             for (phase in phaseSetting) {
-                val inputQueue = ArrayDeque<Int>()
-                inputQueue.add(phase)
+                val inputQueue = ArrayDeque<Long>()
+                inputQueue.add(phase.toLong())
                 inputQueue.add(output)
-                output = Day5SunnyAsteroids().programResult(program.clone(), inputQueue)
+                output = IntComputer(program.clone()).nextOutput(inputQueue, 0, 0).output!!
             }
             maxOutput = max(maxOutput, output)
         }
-        return maxOutput
+        return maxOutput.toInt()
     }
 
     fun maxThrusterSignalWithFeedback(program: IntArray): Int {
@@ -39,10 +39,10 @@ class Day7AmplificationCircuit {
             for (i in intComputers.indices) {
                 inputQueues[i].add(output.toLong())
                 val nextOutput = intComputers[i].nextOutput(inputQueues[i], positions[i], 0)
-                if (nextOutput == null) {
+                if (nextOutput.done) {
                     return output
                 } else {
-                    output = nextOutput.output.toInt()
+                    output = nextOutput.output!!.toInt()
                     positions[i] = nextOutput.position
                 }
             }
