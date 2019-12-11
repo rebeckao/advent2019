@@ -1,4 +1,5 @@
 
+import Util.Companion.toLongArray
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -19,18 +20,14 @@ internal class Day5SunnyAsteroidsTest {
         ], delimiter = ';'
     )
     fun programResultExamples(program: String, input: Long, expected: Long) {
-        val programArray = program.split(",").stream().mapToLong { it.toLong() }.toArray()
         val inputQueue = ArrayDeque<Long>()
         inputQueue.add(input)
-        Assertions.assertEquals(expected, Day5SunnyAsteroids().programResult(programArray, inputQueue))
+        Assertions.assertEquals(expected, Day5SunnyAsteroids().programResult(toLongArray(program), inputQueue))
     }
 
     @Test
     fun programResult() {
-        val programArray = Files.lines(Paths.get("./src/test/resources/day5.txt"))
-            .flatMap { it.split(",").stream() }
-            .mapToLong() { it.toLong() }
-            .toArray()
+        val programArray = toLongArray(Files.lines(Paths.get("./src/test/resources/day5.txt")))
         val inputQueue = ArrayDeque<Long>()
         inputQueue.add(1)
         Assertions.assertEquals(16434972, Day5SunnyAsteroids().programResult(programArray, inputQueue))
@@ -59,18 +56,14 @@ internal class Day5SunnyAsteroidsTest {
         ], delimiter = ';'
     )
     fun programResultExamplesForMoreOpcodes(program: String, input: Long, expected: Long) {
-        val programArray = program.split(",").stream().mapToLong() { it.toLong() }.toArray()
         val inputQueue = ArrayDeque<Long>()
         inputQueue.add(input)
-        Assertions.assertEquals(expected, Day5SunnyAsteroids().programResult(programArray, inputQueue))
+        Assertions.assertEquals(expected, Day5SunnyAsteroids().programResult(toLongArray(program), inputQueue))
     }
 
     @Test
     fun programResultForMoreOpcodes() {
-        val programArray = Files.lines(Paths.get("./src/test/resources/day5.txt"))
-            .flatMap { it.split(",").stream() }
-            .mapToLong { it.toLong() }
-            .toArray()
+        val programArray = toLongArray(Files.lines(Paths.get("./src/test/resources/day5.txt")))
         val inputQueue = ArrayDeque<Long>()
         inputQueue.add(5)
         Assertions.assertEquals(16694270, Day5SunnyAsteroids().programResult(programArray, inputQueue))

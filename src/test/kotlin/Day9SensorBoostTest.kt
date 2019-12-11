@@ -1,4 +1,5 @@
 
+import Util.Companion.toLongArray
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -17,30 +18,24 @@ internal class Day9SensorBoostTest {
             "104,1125899906842624,99;1125899906842624"], delimiter = ';'
     )
     fun resultOfIntComputerExamples(program: String, expected: String) {
-        val programArray = program.split(",").stream().mapToLong { it.toLong() }.toArray()
+        val programArray = toLongArray(program)
         val expectedList = expected.split(",").stream().mapToLong { it.toLong() }.toList()
         assertEquals(expectedList, Day9SensorBoost().resultOfIntComputer(programArray, ArrayDeque()))
     }
 
-
     @Test
     fun resultOfIntComputerTest() {
-        val programArray = Files.lines(Paths.get("./src/test/resources/day9.txt"))
-            .flatMap { it.split(",").stream() }
-            .mapToLong() { it.toLong() }
-            .toArray()
+        val programArray = toLongArray(Files.lines(Paths.get("./src/test/resources/day9.txt")))
         val input = ArrayDeque<Long>()
         input.add(1)
         val actual = Day9SensorBoost().resultOfIntComputer(programArray, input)
         assertEquals(listOf(2870072642), actual)
     }
 
+
     @Test
     fun resultOfIntComputer() {
-        val programArray = Files.lines(Paths.get("./src/test/resources/day9.txt"))
-            .flatMap { it.split(",").stream() }
-            .mapToLong() { it.toLong() }
-            .toArray()
+        val programArray = toLongArray(Files.lines(Paths.get("./src/test/resources/day9.txt")))
         val input = ArrayDeque<Long>()
         input.add(2)
         val actual = Day9SensorBoost().resultOfIntComputer(programArray, input)

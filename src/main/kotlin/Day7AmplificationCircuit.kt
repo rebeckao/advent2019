@@ -19,7 +19,7 @@ class Day7AmplificationCircuit {
         return maxOutput.toInt()
     }
 
-    fun maxThrusterSignalWithFeedback(program: IntArray): Int {
+    fun maxThrusterSignalWithFeedback(program: LongArray): Int {
         val phaseSettings: List<IntArray> = possiblePhaseSettings(setOf(5, 6, 7, 8, 9))
         var maxOutput = 0
         for (phaseSetting in phaseSettings) {
@@ -29,9 +29,9 @@ class Day7AmplificationCircuit {
         return maxOutput
     }
 
-    private fun maxThrusterSignalWithFeedback(program: IntArray, phaseSettings: IntArray): Int {
+    private fun maxThrusterSignalWithFeedback(program: LongArray, phaseSettings: IntArray): Int {
         val intComputers = IntRange(0, 4)
-            .map{IntComputer(toLongArray(program))}
+            .map{IntComputer(program.clone())}
         val inputQueues: List<Queue<Long>> = phaseSettings.asSequence().map{toQueue(it)}.toList()
         val positions = intArrayOf(0, 0, 0, 0, 0)
         var output = 0
@@ -48,8 +48,6 @@ class Day7AmplificationCircuit {
             }
         }
     }
-
-    private fun toLongArray(program: IntArray) = program.map { it.toLong() }.toLongArray()
 
     private fun toQueue(value: Int): ArrayDeque<Long> {
         val queue = ArrayDeque<Long>()
