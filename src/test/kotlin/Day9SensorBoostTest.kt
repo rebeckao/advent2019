@@ -24,7 +24,7 @@ internal class Day9SensorBoostTest {
 
 
     @Test
-    fun resultOfIntComputer() {
+    fun resultOfIntComputerTest() {
         val programArray = Files.lines(Paths.get("./src/test/resources/day9.txt"))
             .flatMap { it.split(",").stream() }
             .mapToLong() { it.toLong() }
@@ -33,5 +33,17 @@ internal class Day9SensorBoostTest {
         input.add(1)
         val actual = Day9SensorBoost().resultOfIntComputer(programArray, input)
         assertEquals(listOf(2870072642), actual)
+    }
+
+    @Test
+    fun resultOfIntComputer() {
+        val programArray = Files.lines(Paths.get("./src/test/resources/day9.txt"))
+            .flatMap { it.split(",").stream() }
+            .mapToLong() { it.toLong() }
+            .toArray()
+        val input = ArrayDeque<Long>()
+        input.add(2)
+        val actual = Day9SensorBoost().resultOfIntComputer(programArray, input)
+        assertEquals(listOf(58534L), actual)
     }
 }
