@@ -1,3 +1,4 @@
+import java.util.*
 import java.util.stream.Stream
 
 class Util {
@@ -10,6 +11,12 @@ class Util {
                 .mapToLong { it.toLong() }
                 .toArray()
             return programArray
+        }
+
+        fun toQueue(value: Long): Queue<Long> {
+            val input = ArrayDeque<Long>()
+            input.add(value)
+            return input
         }
     }
 }
