@@ -32,6 +32,6 @@ internal class Day9SensorBoostTest {
         val input = ArrayDeque<Long>()
         input.add(1)
         val actual = Day9SensorBoost().resultOfIntComputer(programArray, input)
-        assertEquals(listOf(0L), actual)
+        assertEquals(listOf(2870072642), actual)
     }
 }

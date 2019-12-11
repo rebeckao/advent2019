@@ -18,7 +18,7 @@ class IntComputer(private var program: LongArray) {
             }
 
             if (currentOperation == "03") {
-                val resultPos = resolveResultPos(currentPosition, opCodeString, relativeBase)
+                val resultPos = resolveResultPos(currentPosition + 1, opCodeString[2], relativeBase)
                 assignOrIncrease(resultPos, input.poll())
                 currentPosition += 2
                 continue
@@ -57,7 +57,7 @@ class IntComputer(private var program: LongArray) {
                 continue
             }
 
-            val resultPos = getOrIncrease(currentPosition + 3).toInt()
+            val resultPos = resolveResultPos(currentPosition + 3, opCodeString[0], relativeBase)
 
             if (currentOperation == "07") {
                 assignOrIncrease(resultPos, if (param1 < param2) 1L else 0L)
@@ -89,12 +89,11 @@ class IntComputer(private var program: LongArray) {
     }
 
     private fun resolveResultPos(
-        currentPosition: Int,
-        opCodeString: String,
+        paramPosition: Int,
+        opCodeParamType: Char,
         relativeBase: Int
     ): Int {
-        val param = getOrIncrease(currentPosition + 1).toInt()
-        val opCodeParamType = opCodeString[2]
+        val param = getOrIncrease(paramPosition).toInt()
         val resultPos = when {
             opCodeParamType == '0' -> param
             opCodeParamType == '2' -> param + relativeBase
@@ -129,7 +128,6 @@ class IntComputer(private var program: LongArray) {
     private fun increase(index: Int) {
         if (index >= program.size) {
             val increase = index - program.size + 1
-            println("increase = ${increase}")
             program += LongArray(increase)
         }
     }
