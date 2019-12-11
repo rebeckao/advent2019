@@ -18,10 +18,8 @@ class IntComputer(private var program: LongArray) {
             }
 
             if (currentOperation == "03") {
-//                val resultPos =
-//                    resolveParamValue(opCodeString[2], getOrIncrease(currentPosition + 1), relativeBase)
-//                assignOrIncrease(resultPos.toInt(), input.poll())
-                assignOrIncrease(getOrIncrease(currentPosition + 1).toInt(), input.poll())
+                val resultPos = resolveResultPos(currentPosition, opCodeString, relativeBase)
+                assignOrIncrease(resultPos, input.poll())
                 currentPosition += 2
                 continue
             }
@@ -88,6 +86,21 @@ class IntComputer(private var program: LongArray) {
             throw IllegalStateException("op code = ${currentOperation}, at position $currentPosition")
         }
         throw IllegalStateException("No output and no halt")
+    }
+
+    private fun resolveResultPos(
+        currentPosition: Int,
+        opCodeString: String,
+        relativeBase: Int
+    ): Int {
+        val param = getOrIncrease(currentPosition + 1).toInt()
+        val opCodeParamType = opCodeString[2]
+        val resultPos = when {
+            opCodeParamType == '0' -> param
+            opCodeParamType == '2' -> param + relativeBase
+            else -> throw IllegalStateException()
+        }
+        return resultPos
     }
 
     private fun resolveParamValue(
