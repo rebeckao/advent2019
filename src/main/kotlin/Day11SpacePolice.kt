@@ -3,23 +3,26 @@ import java.util.*
 import kotlin.collections.HashMap
 
 class Day11SpacePolice {
+
     fun numberOfPanelsPainted(program: LongArray): Int {
+        return paintedPanels(program, 0).size
+    }
+
+    fun paintedPanels(program: LongArray, input: Int): Map<Position, Int> {
         val robot = IntComputer(program)
         val paintedPanels = HashMap<Position, Int>().toMutableMap()
         var robotPosition = Position(0, 0)
         var robotDirection = Direction.UP
 
-        var paintOutput = robot.nextOutput(toQueue(0), 0, 0)
+        var paintOutput = robot.nextOutput(toQueue(input.toLong()), 0, 0)
         var paintInstruction = paintOutput.output!!.toInt()
         paintedPanels[robotPosition] = paintInstruction
-        println("painting $robotPosition with $paintInstruction")
         var programPosition = paintOutput.position
         var relativeBase = paintOutput.relativeBase
 
         var directionOutput = robot.nextOutput(ArrayDeque<Long>(), programPosition, relativeBase)
         var directionInstruction = directionOutput.output!!.toInt()
         robotDirection = newDirection(robotDirection, directionInstruction)
-        println("going $robotDirection")
         robotPosition = newPosition(robotPosition, robotDirection)
         programPosition = directionOutput.position
         relativeBase = directionOutput.relativeBase
@@ -43,7 +46,7 @@ class Day11SpacePolice {
             programPosition = directionOutput.position
             relativeBase = directionOutput.relativeBase
         }
-        return paintedPanels.size
+        return paintedPanels
     }
 
     private fun newPosition(
