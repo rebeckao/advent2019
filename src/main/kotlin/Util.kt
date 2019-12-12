@@ -1,5 +1,6 @@
 import java.util.*
 import java.util.stream.Stream
+import kotlin.math.abs
 
 class Util {
     companion object {
@@ -17,6 +18,10 @@ class Util {
             val input = ArrayDeque<Long>()
             input.add(value)
             return input
+        }
+
+        fun greatestCommonDivisorPreservingSign(a: Long, b: Long): Long {
+            return if (b == 0L) abs(a) else greatestCommonDivisorPreservingSign(b, a % b)
         }
     }
 }

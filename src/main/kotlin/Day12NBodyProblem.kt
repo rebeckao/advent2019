@@ -1,3 +1,4 @@
+import Util.Companion.greatestCommonDivisorPreservingSign
 import kotlin.math.abs
 
 class Day12NBodyProblem {
@@ -10,32 +11,78 @@ class Day12NBodyProblem {
         return moons.stream().mapToInt { it.kineticEnergy() * it.potentialEnergy() }.sum()
     }
 
-    fun stepsToRepeat(moonsStrings: List<String>): Long {
-        val moons = moonsStrings.map { Moon(it) }.toList()
+    fun totalEnergyDecoupled(moonsStrings: List<String>, steps: Int): Int {
+        val moons = moonsStrings.map { Moon(it) }.toSet()
+        val xStateAfterSteps = stateAfterSteps(moons.map { it.position[0] }.toIntArray(), steps)
+        val yStateAfterSteps = stateAfterSteps(moons.map { it.position[1] }.toIntArray(), steps)
+        val zStateAfterSteps = stateAfterSteps(moons.map { it.position[2] }.toIntArray(), steps)
+        var sum = 0
+        for (i in 0..3) {
+            val potential =
+                abs(xStateAfterSteps.first[i]) + abs(yStateAfterSteps.first[i]) + abs(zStateAfterSteps.first[i])
+            val kinetic =
+                abs(xStateAfterSteps.second[i]) + abs(yStateAfterSteps.second[i]) + abs(zStateAfterSteps.second[i])
+            sum += potential * kinetic
+        }
+        return sum
+    }
+
+    private fun stateAfterSteps(positions: IntArray, steps: Int): Pair<IntArray, IntArray> {
+        val velocities = intArrayOf(0, 0, 0, 0)
         val states = HashSet<String>().toMutableSet()
-        states.add(hash(moons))
-        val start = System.currentTimeMillis()
+        states.add(hash(Pair(positions, velocities)))
+        for (step in 0 until steps) {
+            updateVelocitiesAndPositions(velocities, positions)
+        }
+        return Pair(positions, velocities)
+    }
+
+    fun stepsToRepeatDecoupled(moonsStrings: List<String>): Long {
+        val moons = moonsStrings.map { Moon(it) }.toList()
+        val stepsToRepeatForX =
+            stepsToRepeatForDimension(moons.map { it.position[0] }.toIntArray(), intArrayOf(0, 0, 0, 0))
+        println("stepsToRepeatForX = ${stepsToRepeatForX}")
+        val stepsToRepeatForY =
+            stepsToRepeatForDimension(moons.map { it.position[1] }.toIntArray(), intArrayOf(0, 0, 0, 0))
+        println("stepsToRepeatForY = ${stepsToRepeatForY}")
+        val stepsToRepeatForZ =
+            stepsToRepeatForDimension(moons.map { it.position[2] }.toIntArray(), intArrayOf(0, 0, 0, 0))
+        println("stepsToRepeatForZ = ${stepsToRepeatForZ}")
+        val xAndY = stepsToRepeatForX * stepsToRepeatForY /
+                greatestCommonDivisorPreservingSign(stepsToRepeatForX, stepsToRepeatForY)
+        val xAndYAndZ = xAndY * stepsToRepeatForZ / greatestCommonDivisorPreservingSign(xAndY, stepsToRepeatForZ)
+        return xAndYAndZ
+    }
+
+    private fun stepsToRepeatForDimension(positions: IntArray, velocities: IntArray): Long {
+        val states = HashSet<String>().toMutableSet()
+        states.add(hash(Pair(positions, velocities)))
         for (step in 1 until Long.MAX_VALUE) {
-            moons.forEach { it.updateVelocity(moons.map { it.position }) }
-            moons.forEach { it.updatePosition() }
-            val hash = hash(moons)
+            updateVelocitiesAndPositions(velocities, positions)
+            val hash = hash(Pair(positions, velocities))
             if (states.contains(hash)) {
                 return step
             }
             states.add(hash)
-            if (step % 100_000L == 0L) {
-                println("System.currentTimeMillis() = ${(System.currentTimeMillis() - start)}")
-            }
         }
-        return 0
+        throw IllegalStateException()
     }
 
-    private fun hash(moons: List<Moon>) =
-        moons.map { it.hashCode() }.joinToString("")
+    private fun updateVelocitiesAndPositions(velocities: IntArray, positions: IntArray) {
+        for (i in velocities.indices) {
+            velocities[i] += positions.map { it.compareTo(positions[i]) }.sum()
+        }
+        for (i in positions.indices) {
+            positions[i] += velocities[i]
+        }
+    }
+
+    private fun hash(state: Pair<IntArray, IntArray>) =
+        "" + state.first.contentHashCode() + state.second.contentHashCode()
 
     data class Moon(var position: IntArray, var velocity: IntArray) {
 
-        constructor(str: String) : this(intArrayOf(0,0,0), intArrayOf(0,0,0)) {
+        constructor(str: String) : this(intArrayOf(0, 0, 0), intArrayOf(0, 0, 0)) {
             this.position = parsePosition(str)
         }
 
@@ -58,22 +105,19 @@ class Day12NBodyProblem {
 
         fun updateVelocity(positions: List<IntArray>) {
             val xDelta = positions.stream()
-                .filter{ !it!!.contentEquals(position) }
+                .filter { !it!!.contentEquals(position) }
                 .map { it[0] }
-                .map { it - position[0] }
-                .mapToInt { if (it == 0) 0 else it / abs(it) }
+                .mapToInt { it.compareTo(position[0]) }
                 .sum()
             val yDelta = positions.stream()
-                .filter{ !it!!.contentEquals(position) }
+                .filter { !it!!.contentEquals(position) }
                 .map { it[1] }
-                .map { it - position[1] }
-                .mapToInt { if (it == 0) 0 else it / abs(it) }
+                .mapToInt { it.compareTo(position[1]) }
                 .sum()
             val zDelta = positions.stream()
-                .filter{ !it!!.contentEquals(position) }
+                .filter { !it!!.contentEquals(position) }
                 .map { it[2] }
-                .map { it - position[2] }
-                .mapToInt { if (it == 0) 0 else it / abs(it) }
+                .mapToInt { it.compareTo(position[2]) }
                 .sum()
             velocity[0] += xDelta
             velocity[1] += yDelta

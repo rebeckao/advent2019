@@ -81,8 +81,8 @@ internal class Day10MonitoringStationTest {
 
     @ParameterizedTest
     @CsvSource("2,4,2", "3,5,1", "12,6,6", "-1,-2,1", "-5,-10,5")
-    fun greatestCommonDivisor(a: Int, b: Int, expected: Int) {
-        assertEquals(expected, Day10MonitoringStation().greatestCommonDivisorPreservingSign(a, b))
+    fun greatestCommonDivisor(a: Long, b: Long, expected: Long) {
+        assertEquals(expected, Util.greatestCommonDivisorPreservingSign(a, b))
     }
 
     @ParameterizedTest

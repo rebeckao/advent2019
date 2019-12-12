@@ -106,12 +106,8 @@ class Day10MonitoringStation {
     }
 
     private fun toDirection(vector: Vector): Vector {
-        val divisor = greatestCommonDivisorPreservingSign(vector.x, vector.y)
-        return Vector(x = vector.x / divisor, y = vector.y / divisor)
-    }
-
-    fun greatestCommonDivisorPreservingSign(a: Int, b: Int): Int {
-        return if (b == 0) abs(a) else greatestCommonDivisorPreservingSign(b, a % b)
+        val divisor = Util.greatestCommonDivisorPreservingSign(vector.x.toLong(), vector.y.toLong())
+        return Vector(x = vector.x / divisor.toInt(), y = vector.y / divisor.toInt())
     }
 
     private fun relativePosition(
