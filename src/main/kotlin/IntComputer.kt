@@ -2,8 +2,17 @@ import java.util.*
 
 class IntComputer(private var program: LongArray) {
 
+
     fun nextOutput(
         input: Queue<Long>,
+        startPosition: Int,
+        relativeBaseStart: Int
+    ): CurrentState {
+        return nextOutputWithProvider({input.poll()}, startPosition, relativeBaseStart)
+    }
+
+    fun nextOutputWithProvider(
+        inputProducer: () -> Long,
         startPosition: Int,
         relativeBaseStart: Int
     ): CurrentState {
@@ -19,7 +28,7 @@ class IntComputer(private var program: LongArray) {
 
             if (currentOperation == "03") {
                 val resultPos = resolveResultPos(currentPosition + 1, opCodeString[2], relativeBase)
-                assignOrIncrease(resultPos, input.poll())
+                assignOrIncrease(resultPos, inputProducer())
                 currentPosition += 2
                 continue
             }

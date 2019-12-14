@@ -9,6 +9,13 @@ internal class Day13CarePackageTest {
     @Test
     fun numberOfBlockTiles() {
         val program = toLongArray(Files.lines(Paths.get("./src/test/resources/day13.txt")))
-        assertEquals(0, Day13CarePackage().numberOfBlockTiles(program))
+        assertEquals(213, Day13CarePackage().numberOfBlockTiles(program))
+    }
+
+    @Test
+    fun initialGameState() {
+        val program = toLongArray(Files.lines(Paths.get("./src/test/resources/day13.txt")))
+        program[0] = 2
+        assertEquals(0, Day13CarePackage().playGame(program))
     }
 }
