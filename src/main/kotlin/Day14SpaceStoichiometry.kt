@@ -1,21 +1,89 @@
 import kotlin.math.ceil
 
-class Day14SpaceStoichiometry {
-    val reactionPattern = Regex("([0-9]* [A-Z]*)(, [0-9]* [A-Z]*)* => ([0-9]* [A-Z]*)")
-    val chemicalPattern = Regex("(?:, )?([0-9]*) ([A-Z]*)")
+class Day14SpaceStoichiometry(reactionStrings: List<String>) {
+    private val reactionPattern = Regex("(.*) => ([0-9]* [A-Z]*)")
+    private val chemicalPattern = Regex("([0-9]*) ([A-Z]*)")
+    private val reactions: Map<String, Reaction>
+    private val calculatedCosts: MutableMap<String, Int> = HashMap<String, Int>().toMutableMap()
+    private var bestSoFar: Int? = null
 
-    fun oreRequiredForFuel(reactionStrings: List<String>): Int {
-        val reactions = reactionStrings
+    init {
+        reactions = HashMap()
+        reactionStrings
             .map { parseReaction(it) }
-            .groupBy { it.output.second }
-        return reactions["FUEL"]!!.map { it.cheapestCost(reactions) }.min()!!
+            .forEach { reactions[it.output.second] = it }
     }
 
-    private fun parseReaction(reactionString: String): Reaction {
+    fun oreRequiredForFuel(): Int {
+        val fuelReaction = reactions["FUEL"]!!
+        val currentRequirements: MutableMap<String, Int> =
+            fuelReaction.inputs.map { Pair(it.second, it.first) }.toMap().toMutableMap()
+        return lowestCostOfRequirements(currentRequirements)
+    }
+
+    private fun lowestCostOfRequirements(currentRequirements: MutableMap<String, Int>): Int {
+        val requiredOre = currentRequirements["ORE"]
+        if (requiredOre != null && bestSoFar != null && requiredOre >= bestSoFar!!) {
+            return bestSoFar!!
+        }
+
+        if (requiredOre != null && currentRequirements.size == 1) {
+            bestSoFar = requiredOre
+            println("bestSoFar = ${bestSoFar}")
+            return requiredOre
+        }
+
+        val hash = hash(currentRequirements)
+        if (!calculatedCosts.containsKey(hash)) {
+            calculatedCosts[hash] = currentRequirements.keys
+                .filter { it != "ORE" }
+                .map { costWithChosenChemical(it, HashMap(currentRequirements).toMutableMap()) }
+                .min()!!
+        }
+        return calculatedCosts[hash]!!
+    }
+
+    private fun hash(currentRequirements: MutableMap<String, Int>) =
+        currentRequirements.entries.sortedBy { it.key }.map { it.key + "_" + it.value }.joinToString(".")
+
+    private fun costWithChosenChemical(
+        chemical: String,
+        currentRequirements: MutableMap<String, Int>
+    ): Int {
+        val requiredQuantity = currentRequirements[chemical]!!
+        val reaction = reactions[chemical]!!
+        currentRequirements.remove(chemical)
+        addInputRequirements(reaction, currentRequirements, resolveReactionMultiplier(reaction, requiredQuantity))
+        return lowestCostOfRequirements(currentRequirements)
+    }
+
+    private fun resolveReactionMultiplier(
+        reaction: Reaction,
+        requiredQuantity: Int
+    ): Int {
+        val producedQuantity = reaction.output.first
+        val reactionMultiplier = ceil(requiredQuantity * 1.0 / producedQuantity).toInt()
+        return reactionMultiplier
+    }
+
+    private fun addInputRequirements(
+        reaction: Reaction,
+        currentRequirements: MutableMap<String, Int>,
+        reactionMultiplier: Int
+    ) {
+        for (input in reaction.inputs) {
+            val inputChemical = input.second
+            val inputQuantity = input.first
+            currentRequirements[inputChemical] =
+                (currentRequirements[inputChemical] ?: 0) + inputQuantity * reactionMultiplier
+        }
+    }
+
+    fun parseReaction(reactionString: String): Reaction {
         val matchedGroups = reactionPattern.matchEntire(reactionString)!!.groupValues
         val output = chemicalPattern.matchEntire(matchedGroups.last())!!.groupValues
         val outputChemical = Pair(output[1].toInt(), output[2])
-        val inputs = matchedGroups.subList(1, matchedGroups.size - 1)
+        val inputs = matchedGroups[1].split(", ")
         val inputChemicals = inputs
             .filter { it != "" }
             .map { chemicalPattern.matchEntire(it)!!.groupValues }
@@ -24,41 +92,5 @@ class Day14SpaceStoichiometry {
         return Reaction(inputChemicals, outputChemical)
     }
 
-    data class Reaction(val inputs: List<Pair<Int, String>>, val output: Pair<Int, String>) {
-        var cost: Int? = null
-
-        fun cheapestCost(reactions: Map<String, List<Reaction>>): Int {
-            if (cost == null) {
-                cost = inputs
-                    .map { cheapestReaction(it.first, it.second, reactions) }
-                    .sum()
-            }
-            return cost!!
-        }
-
-        private fun cheapestReaction(
-            quantityRequired: Int,
-            chemicalName: String,
-            reactions: Map<String, List<Reaction>>
-        ): Int {
-            if (chemicalName == "ORE") {
-                return quantityRequired
-            }
-            val cheapestReaction = reactions[chemicalName]!!
-                .map { costOfRequiredQuantity(it, reactions, quantityRequired) }
-                .minBy { it.first }!!
-            return cheapestReaction.first
-        }
-
-        private fun costOfRequiredQuantity(
-            reaction: Reaction,
-            reactions: Map<String, List<Reaction>>,
-            quantityRequired: Int
-        ) : Pair<Int, Int> {
-            val quantityProduced = reaction.output.first
-            val recipeMultiplier = ceil(quantityRequired * 1.0 / quantityProduced).toInt()
-            val leftOver = recipeMultiplier * quantityProduced - quantityRequired
-            return Pair(reaction.cheapestCost(reactions) * recipeMultiplier, leftOver)
-        }
-    }
+    data class Reaction(val inputs: List<Pair<Int, String>>, val output: Pair<Int, String>)
 }
