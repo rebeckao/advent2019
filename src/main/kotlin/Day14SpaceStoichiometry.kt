@@ -12,16 +12,40 @@ class Day14SpaceStoichiometry(reactionStrings: List<String>) {
             .forEach { reactions[it.output.second] = it }
     }
 
-    fun oreRequiredWithLeftovers(): Long {
+    fun oreRequiredWithLeftovers(quantity : Long): Long {
         val fuelReaction = reactions["FUEL"]!!
         val requirements: MutableMap<String, Long> =
             fuelReaction.inputs.map { Pair(it.second, it.first) }.toMap().toMutableMap()
         val leftovers = HashMap<String, Long>().toMutableMap()
         var sum = 0L
         for (chemical in requirements.keys) {
-            sum += resolveAndRecordLeftovers(chemical, requirements[chemical]!!, leftovers)
+            sum += resolveAndRecordLeftovers(chemical, requirements[chemical]!!*quantity, leftovers)
         }
         return sum
+    }
+
+    fun maxFuelThatCanBeProduced(oreAvailable: Long): Long {
+        var minFuelTried = 0L
+        var maxFuelTried = oreAvailable
+        var fuelToTry = maxFuelTried/2
+        while (true) {
+            val oreRequired = oreRequiredWithLeftovers(fuelToTry)
+            when {
+                oreRequired > oreAvailable -> {
+                    maxFuelTried = fuelToTry
+                }
+                oreRequired < oreAvailable -> {
+                    minFuelTried = fuelToTry
+                }
+                else -> {
+                    return fuelToTry
+                }
+            }
+            if (minFuelTried >= maxFuelTried - 1) {
+                return fuelToTry
+            }
+            fuelToTry = (maxFuelTried - minFuelTried)/2 + minFuelTried
+        }
     }
 
     private fun resolveAndRecordLeftovers(
