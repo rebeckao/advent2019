@@ -2,7 +2,10 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.*
+import kotlin.streams.toList
 
 internal class Day14SpaceStoichiometryTest {
 
@@ -24,15 +27,15 @@ internal class Day14SpaceStoichiometryTest {
                     "7 A, 1 B => 1 C\\n" +
                     "7 A, 1 C => 1 D\\n" +
                     "7 A, 1 D => 1 E\\n" +
-                    "7 A, 1 E => 1 FUEL;31"
-            , "9 ORE => 2 A\\n" +
+                    "7 A, 1 E => 1 FUEL;31",
+            "9 ORE => 2 A\\n" +
                     "8 ORE => 3 B\\n" +
                     "7 ORE => 5 C\\n" +
                     "3 A, 4 B => 1 AB\\n" +
                     "5 B, 7 C => 1 BC\\n" +
                     "4 C, 1 A => 1 CA\\n" +
-                    "2 AB, 3 BC, 4 CA => 1 FUEL;165"
-            , "157 ORE => 5 NZVS\\n" +
+                    "2 AB, 3 BC, 4 CA => 1 FUEL;165",
+            "157 ORE => 5 NZVS\\n" +
                     "165 ORE => 6 DCFZ\\n" +
                     "44 XJWVT, 5 KHKGT, 1 QDVJ, 29 NZVS, 9 GPVTF, 48 HKGWZ => 1 FUEL\\n" +
                     "12 HKGWZ, 1 GPVTF, 8 PSHF => 9 QDVJ\\n" +
@@ -40,8 +43,8 @@ internal class Day14SpaceStoichiometryTest {
                     "177 ORE => 5 HKGWZ\\n" +
                     "7 DCFZ, 7 PSHF => 2 XJWVT\\n" +
                     "165 ORE => 2 GPVTF\\n" +
-                    "3 DCFZ, 7 NZVS, 5 HKGWZ, 10 PSHF => 8 KHKGT;13312 "
-            , "2 VPVL, 7 FWMGM, 2 CXFTF, 11 MNCFX => 1 STKFG\\n" +
+                    "3 DCFZ, 7 NZVS, 5 HKGWZ, 10 PSHF => 8 KHKGT;13312 ",
+            "2 VPVL, 7 FWMGM, 2 CXFTF, 11 MNCFX => 1 STKFG\\n" +
                     "17 NVRVD, 3 JNWZP => 8 VPVL\\n" +
                     "53 STKFG, 6 MNCFX, 46 VJHF, 81 HVMC, 68 CXFTF, 25 GNMV => 1 FUEL\\n" +
                     "22 VJHF, 37 MNCFX => 5 FWMGM\\n" +
@@ -52,8 +55,8 @@ internal class Day14SpaceStoichiometryTest {
                     "145 ORE => 6 MNCFX\\n" +
                     "1 NVRVD => 8 CXFTF\\n" +
                     "1 VJHF, 6 MNCFX => 4 RFSQX\\n" +
-                    "176 ORE => 6 VJHF;180697"
-            , "171 ORE => 8 CNZTR\\n" +
+                    "176 ORE => 6 VJHF;180697",
+            "171 ORE => 8 CNZTR\\n" +
                     "7 ZLQW, 3 BMBT, 9 XCVML, 26 XMNCP, 1 WPTQ, 2 MZWV, 1 RJRHP => 4 PLWSL\\n" +
                     "114 ORE => 4 BHXH\\n" +
                     "14 VRPVC => 6 BMBT\\n" +
@@ -73,7 +76,14 @@ internal class Day14SpaceStoichiometryTest {
         ],
         delimiter = ';'
     )
-    fun oreRequiredForFuel(reactions: String, expected: Int) {
-        assertEquals(expected, Day14SpaceStoichiometry(reactions.split("\\n")).oreRequiredForFuel())
+    fun oreRequiredForFuelExamples(reactions: String, expected: Int) {
+        assertEquals(expected, Day14SpaceStoichiometry(reactions.split("\\n")).oreRequiredWithLeftovers())
     }
+
+    @Test
+    fun oreRequiredForFuel() {
+        val reactions = Files.lines(Paths.get("./src/test/resources/day14.txt")).toList()
+        assertEquals(741927, Day14SpaceStoichiometry(reactions).oreRequiredWithLeftovers())
+    }
+
 }

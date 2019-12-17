@@ -4,8 +4,6 @@ class Day14SpaceStoichiometry(reactionStrings: List<String>) {
     private val reactionPattern = Regex("(.*) => ([0-9]* [A-Z]*)")
     private val chemicalPattern = Regex("([0-9]*) ([A-Z]*)")
     private val reactions: Map<String, Reaction>
-    private val calculatedCosts: MutableMap<String, Int> = HashMap<String, Int>().toMutableMap()
-    private var bestSoFar: Int? = null
 
     init {
         reactions = HashMap()
@@ -14,47 +12,47 @@ class Day14SpaceStoichiometry(reactionStrings: List<String>) {
             .forEach { reactions[it.output.second] = it }
     }
 
-    fun oreRequiredForFuel(): Int {
+    fun oreRequiredWithLeftovers(): Int {
         val fuelReaction = reactions["FUEL"]!!
-        val currentRequirements: MutableMap<String, Int> =
+        val requirements: MutableMap<String, Int> =
             fuelReaction.inputs.map { Pair(it.second, it.first) }.toMap().toMutableMap()
-        return lowestCostOfRequirements(currentRequirements)
+        val leftovers = HashMap<String, Int>().toMutableMap()
+        var sum = 0
+        for (chemical in requirements.keys) {
+            sum += resolveAndRecordLeftovers(chemical, requirements[chemical]!!, leftovers)
+        }
+        return sum
     }
 
-    private fun lowestCostOfRequirements(currentRequirements: MutableMap<String, Int>): Int {
-        val requiredOre = currentRequirements["ORE"]
-        if (requiredOre != null && bestSoFar != null && requiredOre >= bestSoFar!!) {
-            return bestSoFar!!
-        }
-
-        if (requiredOre != null && currentRequirements.size == 1) {
-            bestSoFar = requiredOre
-            println("bestSoFar = ${bestSoFar}")
-            return requiredOre
-        }
-
-        val hash = hash(currentRequirements)
-        if (!calculatedCosts.containsKey(hash)) {
-            calculatedCosts[hash] = currentRequirements.keys
-                .filter { it != "ORE" }
-                .map { costWithChosenChemical(it, HashMap(currentRequirements).toMutableMap()) }
-                .min()!!
-        }
-        return calculatedCosts[hash]!!
-    }
-
-    private fun hash(currentRequirements: MutableMap<String, Int>) =
-        currentRequirements.entries.sortedBy { it.key }.map { it.key + "_" + it.value }.joinToString(".")
-
-    private fun costWithChosenChemical(
+    private fun resolveAndRecordLeftovers(
         chemical: String,
-        currentRequirements: MutableMap<String, Int>
+        requiredQuantity: Int,
+        leftovers: MutableMap<String, Int>
     ): Int {
-        val requiredQuantity = currentRequirements[chemical]!!
+        var quantity = requiredQuantity
+        if (chemical == "ORE") {
+            return quantity
+        }
+        val leftoverChemical = leftovers[chemical]
+        if (leftoverChemical != null) {
+            if (leftoverChemical > quantity) {
+                leftovers[chemical] = leftoverChemical - quantity
+                return 0
+            } else {
+                quantity -= leftoverChemical
+                leftovers[chemical] = 0
+            }
+        }
         val reaction = reactions[chemical]!!
-        currentRequirements.remove(chemical)
-        addInputRequirements(reaction, currentRequirements, resolveReactionMultiplier(reaction, requiredQuantity))
-        return lowestCostOfRequirements(currentRequirements)
+        val reactionMultiplier = resolveReactionMultiplier(reaction, quantity)
+        leftovers[chemical] = (leftovers[chemical] ?: 0) + reactionMultiplier * reaction.output.first - quantity
+        var sum = 0
+        for (input in reaction.inputs) {
+            val inputChemical = input.second
+            val inputQuantity = input.first
+            sum += resolveAndRecordLeftovers(inputChemical, inputQuantity * reactionMultiplier, leftovers)
+        }
+        return sum
     }
 
     private fun resolveReactionMultiplier(
@@ -62,21 +60,7 @@ class Day14SpaceStoichiometry(reactionStrings: List<String>) {
         requiredQuantity: Int
     ): Int {
         val producedQuantity = reaction.output.first
-        val reactionMultiplier = ceil(requiredQuantity * 1.0 / producedQuantity).toInt()
-        return reactionMultiplier
-    }
-
-    private fun addInputRequirements(
-        reaction: Reaction,
-        currentRequirements: MutableMap<String, Int>,
-        reactionMultiplier: Int
-    ) {
-        for (input in reaction.inputs) {
-            val inputChemical = input.second
-            val inputQuantity = input.first
-            currentRequirements[inputChemical] =
-                (currentRequirements[inputChemical] ?: 0) + inputQuantity * reactionMultiplier
-        }
+        return ceil(requiredQuantity * 1.0 / producedQuantity).toInt()
     }
 
     fun parseReaction(reactionString: String): Reaction {
