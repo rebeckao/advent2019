@@ -13,8 +13,8 @@ internal class Day14SpaceStoichiometryTest {
     fun parseReaction() {
         assertEquals(
             Day14SpaceStoichiometry.Reaction(
-                listOf(Pair(2, "AB"), Pair(3, "BC"), Pair(4, "CA")),
-                Pair(1, "FUEL")
+                listOf(Pair(2L, "AB"), Pair(3L, "BC"), Pair(4L, "CA")),
+                Pair(1L, "FUEL")
             ), Day14SpaceStoichiometry(Collections.emptyList()).parseReaction("2 AB, 3 BC, 4 CA => 1 FUEL")
         )
     }
@@ -76,7 +76,7 @@ internal class Day14SpaceStoichiometryTest {
         ],
         delimiter = ';'
     )
-    fun oreRequiredForFuelExamples(reactions: String, expected: Int) {
+    fun oreRequiredForFuelExamples(reactions: String, expected: Long) {
         assertEquals(expected, Day14SpaceStoichiometry(reactions.split("\\n")).oreRequiredWithLeftovers())
     }
 

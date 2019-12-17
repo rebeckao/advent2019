@@ -12,12 +12,12 @@ class Day14SpaceStoichiometry(reactionStrings: List<String>) {
             .forEach { reactions[it.output.second] = it }
     }
 
-    fun oreRequiredWithLeftovers(): Int {
+    fun oreRequiredWithLeftovers(): Long {
         val fuelReaction = reactions["FUEL"]!!
-        val requirements: MutableMap<String, Int> =
+        val requirements: MutableMap<String, Long> =
             fuelReaction.inputs.map { Pair(it.second, it.first) }.toMap().toMutableMap()
-        val leftovers = HashMap<String, Int>().toMutableMap()
-        var sum = 0
+        val leftovers = HashMap<String, Long>().toMutableMap()
+        var sum = 0L
         for (chemical in requirements.keys) {
             sum += resolveAndRecordLeftovers(chemical, requirements[chemical]!!, leftovers)
         }
@@ -26,9 +26,9 @@ class Day14SpaceStoichiometry(reactionStrings: List<String>) {
 
     private fun resolveAndRecordLeftovers(
         chemical: String,
-        requiredQuantity: Int,
-        leftovers: MutableMap<String, Int>
-    ): Int {
+        requiredQuantity: Long,
+        leftovers: MutableMap<String, Long>
+    ): Long {
         var quantity = requiredQuantity
         if (chemical == "ORE") {
             return quantity
@@ -46,7 +46,7 @@ class Day14SpaceStoichiometry(reactionStrings: List<String>) {
         val reaction = reactions[chemical]!!
         val reactionMultiplier = resolveReactionMultiplier(reaction, quantity)
         leftovers[chemical] = (leftovers[chemical] ?: 0) + reactionMultiplier * reaction.output.first - quantity
-        var sum = 0
+        var sum = 0L
         for (input in reaction.inputs) {
             val inputChemical = input.second
             val inputQuantity = input.first
@@ -57,24 +57,24 @@ class Day14SpaceStoichiometry(reactionStrings: List<String>) {
 
     private fun resolveReactionMultiplier(
         reaction: Reaction,
-        requiredQuantity: Int
-    ): Int {
+        requiredQuantity: Long
+    ): Long {
         val producedQuantity = reaction.output.first
-        return ceil(requiredQuantity * 1.0 / producedQuantity).toInt()
+        return ceil(requiredQuantity * 1.0 / producedQuantity).toLong()
     }
 
     fun parseReaction(reactionString: String): Reaction {
         val matchedGroups = reactionPattern.matchEntire(reactionString)!!.groupValues
         val output = chemicalPattern.matchEntire(matchedGroups.last())!!.groupValues
-        val outputChemical = Pair(output[1].toInt(), output[2])
+        val outputChemical = Pair(output[1].toLong(), output[2])
         val inputs = matchedGroups[1].split(", ")
         val inputChemicals = inputs
             .filter { it != "" }
             .map { chemicalPattern.matchEntire(it)!!.groupValues }
-            .map { Pair(it[1].toInt(), it[2]) }
+            .map { Pair(it[1].toLong(), it[2]) }
             .toList()
         return Reaction(inputChemicals, outputChemical)
     }
 
-    data class Reaction(val inputs: List<Pair<Int, String>>, val output: Pair<Int, String>)
+    data class Reaction(val inputs: List<Pair<Long, String>>, val output: Pair<Long, String>)
 }
