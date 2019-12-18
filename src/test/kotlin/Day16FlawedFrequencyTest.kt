@@ -1,3 +1,4 @@
+
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -25,6 +26,22 @@ internal class Day16FlawedFrequencyTest {
     @Test
     fun firstEightDigitsInFinalOutput() {
         val input = Files.lines(Paths.get("./src/test/resources/day16.txt")).toList()[0]
-        assertEquals(74608727, Day16FlawedFrequency().firstEightDigitsInFinalOutput(input, 100))
+        assertEquals("74608727", Day16FlawedFrequency().firstEightDigitsInFinalOutput(input, 100))
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "03036732577212944063491565474664,100,84462026",
+        "02935109699940807407585447034323,100,78725270",
+        "03081770884921959731165446850517,100,53553731"
+    )
+    fun offsetEightDigitsInOutputExamples(input: String, phases: Int, expected: String) {
+        assertEquals(expected, Day16FlawedFrequency().decodedFromTheEnd(input, phases))
+    }
+
+    @Test
+    fun offsetEightDigitsInOutput() {
+        val input = Files.lines(Paths.get("./src/test/resources/day16.txt")).toList()[0]
+        assertEquals("57920757", Day16FlawedFrequency().decodedFromTheEnd(input, 100))
     }
 }

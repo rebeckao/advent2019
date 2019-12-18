@@ -1,4 +1,3 @@
-
 import kotlin.math.abs
 
 class Day16FlawedFrequency {
@@ -19,5 +18,27 @@ class Day16FlawedFrequency {
             input = output
         }
         return input.joinToString("").substring(0, 8)
+    }
+
+    fun decodedFromTheEnd(initialInput: String, phases: Int) : String {
+        val offsetIndex = initialInput.substring(0, 7).toInt()
+        val shortInput = initialInput
+            .split("")
+            .filter { it != "" }
+            .map { it.toInt() }
+            .toIntArray()
+
+        val relevantLength = initialInput.length * 10000 - offsetIndex
+        val input = IntArray(relevantLength)
+        for (index in 0 until relevantLength) {
+            input[index] = shortInput[(index + offsetIndex) % shortInput.size]
+        }
+
+        for (phase in 0 until phases) {
+            for (outputDigitNumber in relevantLength - 2 downTo 0) {
+                input[outputDigitNumber] = (input[outputDigitNumber] + input[outputDigitNumber + 1]) % 10
+            }
+        }
+        return input.toList().subList(0, 8).joinToString("")
     }
 }
