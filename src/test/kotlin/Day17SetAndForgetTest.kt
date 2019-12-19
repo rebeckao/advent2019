@@ -16,19 +16,26 @@ internal class Day17SetAndForgetTest {
                 "#############\n" +
                 "..#...#...#..\n" +
                 "..#####...^.."
-        val map = HashMap<Pair<Int, Int>, Char>().toMutableMap()
-        val listMap = stringMap.split("\n")
-        for (y in listMap.indices) {
-            for (x in listMap[y].indices) {
-                map[Pair(x, y)] = listMap[y][x]
-            }
-        }
-        assertEquals(76, Day17SetAndForget().scaffoldIntersectionCalibration(map))
+        assertEquals(76, Day17SetAndForget().scaffoldIntersectionCalibration(stringMap))
     }
 
     @Test
     fun scaffoldIntersectionCalibration() {
         val program = toLongArray(Files.lines(Paths.get("./src/test/resources/day17.txt")))
         assertEquals(5948, Day17SetAndForget().scaffoldIntersectionCalibration(program))
+    }
+
+    @Test
+    fun scaffoldNavigation() {
+        val program = toLongArray(Files.lines(Paths.get("./src/test/resources/day17.txt")))
+        val mainMovementRoutine = "A,B,A,C,B,C,B,C,A,C"
+        val programDefinitions = listOf(
+            "R,12,L,6,R,12",
+            "L,8,L,6,L,10",
+            "R,12,L,10,L,6,R,10"
+        )
+        program[0] = 2
+        val continuousVideoFeed=false
+        assertEquals(997790L, Day17SetAndForget().navigateAsInstructed(program, mainMovementRoutine, programDefinitions, continuousVideoFeed))
     }
 }
