@@ -1,12 +1,24 @@
-
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 
-class Day18ManyWorlds(val rawMap: String) {
+class Day18ManyWorlds(val map: List<String>) {
     val paths: Map<Char, List<PathToKey>>
+    val shortestPaths = HashMap<String, Int>().toMutableMap()
+
     init {
-        this.paths = toPaths(rawMap)
+        this.paths = toPaths(map)
+    }
+
+    fun usingRecursionAndCaching(): Int {
+        val allKeyNodes = HashMap<Char, KeyNode>().toMutableMap()
+        paths.filter { it.key != '@' }
+            .map { KeyNode(it.key, it.value, shortestPaths) }
+            .forEach { allKeyNodes[it.key] = it }
+        val shortestPathToRemainingKeys =
+            KeyNode('@', paths['@']!!, shortestPaths).shortestPathToRemainingKeys(emptySet(), allKeyNodes)
+        return shortestPathToRemainingKeys
     }
 
     fun shortestPathToCollectAllKeys(): Int {
@@ -39,12 +51,11 @@ class Day18ManyWorlds(val rawMap: String) {
         return minSteps
     }
 
-    private fun theWayIsCleared(blockers: List<Char>, keysCollected: Set<Char>): Boolean {
+    fun theWayIsCleared(blockers: List<Char>, keysCollected: Set<Char>): Boolean {
         return blockers.filter { !keysCollected.contains(it) }.isEmpty()
     }
 
-    private fun toPaths(rawMap: String): Map<Char, List<PathToKey>> {
-        var initialMap = rawMap.split("\n")
+    private fun toPaths(initialMap: List<String>): Map<Char, List<PathToKey>> {
         val allKeys = HashMap<Char, Pair<Int, Int>>()
         var startingPosition = Pair(0, 0)
         for (y in initialMap.indices) {
@@ -57,7 +68,7 @@ class Day18ManyWorlds(val rawMap: String) {
                 }
             }
         }
-        initialMap = initialMap.map { it.replace('@', '.') }
+        val map = initialMap.map { it.replace('@', '.') }
         val paths = HashMap<Char, MutableList<PathToKey>>().toMutableMap()
         paths['@'] = ArrayList()
         for (key in allKeys.keys) {
@@ -66,9 +77,9 @@ class Day18ManyWorlds(val rawMap: String) {
                 if (key == otherKey) {
                     continue
                 }
-                paths[key]!!.add(findPathTo(otherKey, initialMap, allKeys[key]!!))
+                paths[key]!!.add(findPathTo(otherKey, map, allKeys[key]!!))
             }
-            paths['@']!!.add(findPathTo(key, initialMap, startingPosition))
+            paths['@']!!.add(findPathTo(key, map, startingPosition))
         }
         return paths
     }
@@ -118,5 +129,37 @@ class Day18ManyWorlds(val rawMap: String) {
     )
 
     data class Exploration(val currentKey: Char, val steps: Int, val keysCollected: Set<Char>)
+
+    class KeyNode(val key: Char, val pathsAway: List<PathToKey>, val shortestPaths: MutableMap<String, Int>) {
+
+        fun shortestPathToRemainingKeys(keysCollectedIncoming: Set<Char>, allKeyNodes: Map<Char, KeyNode>): Int {
+            val keysCollected = keysCollectedIncoming.toMutableSet()
+            if (key != '@') {
+                keysCollected.add(key)
+            }
+            if (keysCollected.size == allKeyNodes.size) {
+                return 0
+            }
+            val hash = hash(key, keysCollected)
+            if (!shortestPaths.containsKey(hash)) {
+                val shortestPath = pathsAway
+                    .filter { !keysCollected.contains(it.to) }
+                    .filter { theWayIsCleared(it.blockedBy, keysCollected) }
+                    .map { it.distance + allKeyNodes[it.to]!!.shortestPathToRemainingKeys(keysCollected, allKeyNodes) }
+                    .min()!!
+                shortestPaths[hash] = shortestPath
+            }
+            val shortest = shortestPaths[hash]!!
+            return shortest
+        }
+
+        private fun theWayIsCleared(blockers: List<Char>, keysCollected: Set<Char>): Boolean {
+            return blockers.filter { !keysCollected.contains(it) }.isEmpty()
+        }
+
+        fun hash(key: Char, keysCollected: Set<Char>): String {
+            return "$key-${keysCollected.sorted().joinToString ( "." )}"
+        }
+    }
 
 }

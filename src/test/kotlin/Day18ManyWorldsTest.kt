@@ -36,6 +36,13 @@ internal class Day18ManyWorldsTest {
                 "########################,81"
     )
     fun leastStepsToCollectAllKeysExamples(rawMap: String, expected: Int) {
-        assertEquals(expected, Day18ManyWorlds(rawMap.replace("\\n", "\n").replace("ö", "")).shortestPathToCollectAllKeys())
+        val map = rawMap.replace("ö", "").split("\\n")
+        assertEquals(expected, Day18ManyWorlds(map).usingRecursionAndCaching())
     }
+
+//    @Test
+//    fun leastStepsToCollectAllKeys() {
+//        val map = Files.lines(Paths.get("./src/test/resources/day18.txt")).toList()
+//        assertEquals(0, Day18ManyWorlds(map).usingRecursionAndCaching())
+//    }
 }
