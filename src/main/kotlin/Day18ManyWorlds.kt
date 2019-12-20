@@ -5,13 +5,13 @@ import kotlin.collections.HashSet
 
 class Day18ManyWorlds(val map: List<String>) {
     val paths: Map<Char, List<PathToKey>>
-    val shortestPaths = HashMap<String, Int>().toMutableMap()
+    private val shortestPaths = HashMap<String, Int>().toMutableMap()
 
     init {
         this.paths = toPaths(map)
     }
 
-    fun usingRecursionAndCaching(): Int {
+    fun shortestPathToCollectAllKeys(): Int {
         val allKeyNodes = HashMap<Char, KeyNode>().toMutableMap()
         paths.filter { it.key != '@' }
             .map { KeyNode(it.key, it.value, shortestPaths) }
@@ -19,40 +19,6 @@ class Day18ManyWorlds(val map: List<String>) {
         val shortestPathToRemainingKeys =
             KeyNode('@', paths['@']!!, shortestPaths).shortestPathToRemainingKeys(emptySet(), allKeyNodes)
         return shortestPathToRemainingKeys
-    }
-
-    fun shortestPathToCollectAllKeys(): Int {
-//        val explorations = Stack<Exploration>() // Width first
-        val explorations = ArrayDeque<Exploration>() // Breadth first
-        explorations.add(Exploration('@', 0, HashSet()))
-        val numberOfKeys = paths.keys.size - 1
-        var minSteps = Int.MAX_VALUE
-        var i = 0
-        while (explorations.isNotEmpty()) {
-            val exploration = explorations.pop()
-            val keysCollected = exploration.keysCollected
-            if (keysCollected.size == numberOfKeys) {
-                minSteps = exploration.steps
-                continue
-            }
-            paths[exploration.currentKey]!!
-                .filter { !keysCollected.contains(it.to) }
-                .filter { theWayIsCleared(it.blockedBy, keysCollected) }
-                .filter { (exploration.steps + it.distance) < minSteps }
-                .forEach {
-                    val newKeysCollected = keysCollected.toMutableSet()
-                    newKeysCollected.add(it.to)
-                    explorations.add(Exploration(it.to, exploration.steps + it.distance, newKeysCollected))
-                }
-            if (i++ % 1000_000 == 0) {
-                println("i = $i, minsteps = $minSteps, explorations=${explorations.size}")
-            }
-        }
-        return minSteps
-    }
-
-    fun theWayIsCleared(blockers: List<Char>, keysCollected: Set<Char>): Boolean {
-        return blockers.filter { !keysCollected.contains(it) }.isEmpty()
     }
 
     private fun toPaths(initialMap: List<String>): Map<Char, List<PathToKey>> {
@@ -69,34 +35,38 @@ class Day18ManyWorlds(val map: List<String>) {
             }
         }
         val map = initialMap.map { it.replace('@', '.') }
-        val paths = HashMap<Char, MutableList<PathToKey>>().toMutableMap()
-        paths['@'] = ArrayList()
+        val paths = HashMap<Char, List<PathToKey>>().toMutableMap()
+        paths['@'] = findPaths('@', map, startingPosition, allKeys.keys)
         for (key in allKeys.keys) {
-            paths[key] = ArrayList()
-            for (otherKey in allKeys.keys) {
-                if (key == otherKey) {
-                    continue
-                }
-                paths[key]!!.add(findPathTo(otherKey, map, allKeys[key]!!))
-            }
-            paths['@']!!.add(findPathTo(key, map, startingPosition))
+            paths[key] = findPaths(key, map, allKeys[key]!!, allKeys.keys)
         }
         return paths
     }
 
-    private fun findPathTo(
-        target: Char,
+    private fun findPaths(
+        startingKey: Char,
         initialMap: List<String>,
-        startPosition: Pair<Int, Int>
-    ): PathToKey {
+        startPosition: Pair<Int, Int>,
+        allKeys: MutableSet<Char>
+    ): List<PathToKey> {
+        val foundPaths = ArrayList<PathToKey>().toMutableList()
+        val keysToFind = allKeys.filter { it != startingKey }
+        val blockerPattern = Regex("[A-Z]")
+        val keyPattern = Regex("[a-z]")
         val explorations = ArrayDeque<PathState>() // Breadth first
-        explorations.add(PathState(startPosition, 0, setOf(startPosition), Collections.emptyList()))
-        while (explorations.isNotEmpty()) {
+        val visitedPositions = HashSet<Pair<Int, Int>>()
+        visitedPositions.add(startPosition)
+        explorations.add(PathState(startPosition, 0, Collections.emptyList()))
+        while (explorations.isNotEmpty() && foundPaths.size < keysToFind.size) {
             val pathState = explorations.poll()!!
             val currentPosition = pathState.position
+//            val currentTile = initialMap[currentPosition.second][currentPosition.first]
+//            if (currentTile.toString().matches(keyPattern)) {
+//                foundPaths.add(PathToKey(currentTile, pathState.steps, pathState.blockers))
+//            }
             for (dir in Arrays.asList(Pair(0, -1), Pair(0, 1), Pair(-1, 0), Pair(1, 0))) {
                 val newPosition = Pair(currentPosition.first + dir.first, currentPosition.second + dir.second)
-                if (pathState.visitedPositions.contains(newPosition)) {
+                if (visitedPositions.contains(newPosition)) {
                     continue
                 }
                 val tile = initialMap[newPosition.second][newPosition.first]
@@ -104,19 +74,17 @@ class Day18ManyWorlds(val map: List<String>) {
                     continue
                 }
                 val blockers = pathState.blockers.toMutableList()
-                if (tile.toString().matches(Regex("[A-Z]"))) {
+                if (tile.toString().matches(blockerPattern)) {
                     blockers.add(tile.toLowerCase())
                 }
-                if (tile == target) {
-                    return PathToKey(target, pathState.steps + 1, blockers)
-                } else {
-                    val visitedPositions = pathState.visitedPositions.toMutableSet()
-                    visitedPositions.add(newPosition)
-                    explorations.add(PathState(newPosition, pathState.steps + 1, visitedPositions, blockers))
+                if (tile.toString().matches(keyPattern)) {
+                    foundPaths.add(PathToKey(tile, pathState.steps + 1, blockers))
                 }
+                visitedPositions.add(newPosition)
+                explorations.add(PathState(newPosition, pathState.steps + 1, blockers))
             }
         }
-        throw IllegalStateException()
+        return foundPaths
     }
 
     data class PathToKey(val to: Char, val distance: Int, val blockedBy: List<Char>)
@@ -124,13 +92,14 @@ class Day18ManyWorlds(val map: List<String>) {
     data class PathState(
         val position: Pair<Int, Int>,
         val steps: Int,
-        val visitedPositions: Set<Pair<Int, Int>>,
         val blockers: List<Char>
     )
 
-    data class Exploration(val currentKey: Char, val steps: Int, val keysCollected: Set<Char>)
-
-    class KeyNode(val key: Char, val pathsAway: List<PathToKey>, val shortestPaths: MutableMap<String, Int>) {
+    class KeyNode(
+        val key: Char,
+        private val pathsAway: List<PathToKey>,
+        private val shortestPaths: MutableMap<String, Int>
+    ) {
 
         fun shortestPathToRemainingKeys(keysCollectedIncoming: Set<Char>, allKeyNodes: Map<Char, KeyNode>): Int {
             val keysCollected = keysCollectedIncoming.toMutableSet()
@@ -157,8 +126,8 @@ class Day18ManyWorlds(val map: List<String>) {
             return blockers.filter { !keysCollected.contains(it) }.isEmpty()
         }
 
-        fun hash(key: Char, keysCollected: Set<Char>): String {
-            return "$key-${keysCollected.sorted().joinToString ( "." )}"
+        private fun hash(key: Char, keysCollected: Set<Char>): String {
+            return "$key-${keysCollected.sorted().joinToString(".")}"
         }
     }
 

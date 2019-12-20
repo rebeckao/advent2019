@@ -1,6 +1,10 @@
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import java.nio.file.Files
+import java.nio.file.Paths
+import kotlin.streams.toList
 
 internal class Day18ManyWorldsTest {
 
@@ -37,12 +41,12 @@ internal class Day18ManyWorldsTest {
     )
     fun leastStepsToCollectAllKeysExamples(rawMap: String, expected: Int) {
         val map = rawMap.replace("ö", "").split("\\n")
-        assertEquals(expected, Day18ManyWorlds(map).usingRecursionAndCaching())
+        assertEquals(expected, Day18ManyWorlds(map).shortestPathToCollectAllKeys())
     }
 
-//    @Test
-//    fun leastStepsToCollectAllKeys() {
-//        val map = Files.lines(Paths.get("./src/test/resources/day18.txt")).toList()
-//        assertEquals(0, Day18ManyWorlds(map).usingRecursionAndCaching())
-//    }
+    @Test
+    fun leastStepsToCollectAllKeys() {
+        val map = Files.lines(Paths.get("./src/test/resources/day18.txt")).toList()
+        assertEquals(3646, Day18ManyWorlds(map).shortestPathToCollectAllKeys())
+    }
 }
