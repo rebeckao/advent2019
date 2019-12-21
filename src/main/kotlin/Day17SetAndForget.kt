@@ -12,7 +12,7 @@ class Day17SetAndForget {
 
     private fun runProgram(program: LongArray, input: ArrayDeque<Long>): String {
         val intComputer = IntComputer(program)
-        var nextOutput = intComputer.nextOutput(input, 0, 0)
+        var nextOutput = intComputer.nextOutput(input)
         var x = 0
         var y = 0
         var currentRow = StringBuilder()
@@ -35,7 +35,7 @@ class Day17SetAndForget {
                     x++
                 }
             }
-            nextOutput = intComputer.nextOutput(input, nextOutput.position, nextOutput.relativeBase)
+            nextOutput = intComputer.nextOutput(input)
         }
         allOutput.append(currentRow.toString())
         return allOutput.toString()

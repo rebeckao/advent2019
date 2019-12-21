@@ -36,15 +36,15 @@ class Day13CarePackage() {
     fun numberOfBlockTiles(program: LongArray): Int {
         val tiles = HashMap<Pair<Long, Long>, Int>().toMutableMap()
         val intComputer = IntComputer(program)
-        var nextOutput = intComputer.nextOutput(ArrayDeque(), 0, 0)
+        var nextOutput = intComputer.nextOutput(ArrayDeque())
         while (!nextOutput.done) {
             val x = nextOutput.output!!
-            nextOutput = intComputer.nextOutput(ArrayDeque(), nextOutput.position, nextOutput.relativeBase)
+            nextOutput = intComputer.nextOutput(ArrayDeque())
             val y = nextOutput.output!!
-            nextOutput = intComputer.nextOutput(ArrayDeque(), nextOutput.position, nextOutput.relativeBase)
+            nextOutput = intComputer.nextOutput(ArrayDeque())
             val tile = nextOutput.output!!
             tiles[Pair(x, y)] = tile.toInt()
-            nextOutput = intComputer.nextOutput(ArrayDeque(), nextOutput.position, nextOutput.relativeBase)
+            nextOutput = intComputer.nextOutput(ArrayDeque())
         }
         return tiles.values.filter { it == 2 }.count()
     }
@@ -69,14 +69,12 @@ class Day13CarePackage() {
         val tiles = HashMap<Pair<Long, Long>, Int>().toMutableMap()
         var score = 0L
         val intComputer = IntComputer(program)
-        var nextOutput = intComputer.nextOutputWithProvider({ inputProvider(tiles) }, 0, 0)
+        var nextOutput = intComputer.nextOutputWithProvider({ inputProvider(tiles) })
         while (!nextOutput.done) {
             val x = nextOutput.output!!
-            nextOutput =
-                intComputer.nextOutputWithProvider({ inputProvider(tiles) }, nextOutput.position, nextOutput.relativeBase)
+            nextOutput = intComputer.nextOutputWithProvider({ inputProvider(tiles) })
             val y = nextOutput.output!!
-            nextOutput =
-                intComputer.nextOutputWithProvider({ inputProvider(tiles) }, nextOutput.position, nextOutput.relativeBase)
+            nextOutput = intComputer.nextOutputWithProvider({ inputProvider(tiles) })
             val tile = nextOutput.output!!
             if (x == -1L && y == 0L) {
                 score = tile
@@ -84,8 +82,7 @@ class Day13CarePackage() {
             } else {
                 tiles[Pair(x, y)] = tile.toInt()
             }
-            nextOutput =
-                intComputer.nextOutputWithProvider({ inputProvider(tiles) }, nextOutput.position, nextOutput.relativeBase)
+            nextOutput = intComputer.nextOutputWithProvider({ inputProvider(tiles) })
         }
         return score
     }
@@ -99,7 +96,7 @@ class Day13CarePackage() {
     }
 
     private fun robotInput(tiles: Map<Pair<Long, Long>, Int>): Int {
-        draw(tiles)
+//        draw(tiles)
         val ballXCoord = tiles.entries.find { it.value == 4}!!.key.first
         val tileXCoord = tiles.entries.find { it.value == 3}!!.key.first
         if (ballXCoord > tileXCoord){

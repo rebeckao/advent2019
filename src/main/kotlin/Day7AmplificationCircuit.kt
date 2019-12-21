@@ -12,7 +12,7 @@ class Day7AmplificationCircuit {
                 val inputQueue = ArrayDeque<Long>()
                 inputQueue.add(phase.toLong())
                 inputQueue.add(output)
-                output = IntComputer(program.clone()).nextOutput(inputQueue, 0, 0).output!!
+                output = IntComputer(program.clone()).nextOutput(inputQueue).output!!
             }
             maxOutput = max(maxOutput, output)
         }
@@ -33,17 +33,15 @@ class Day7AmplificationCircuit {
         val intComputers = IntRange(0, 4)
             .map{IntComputer(program.clone())}
         val inputQueues: List<Queue<Long>> = phaseSettings.asSequence().map{toQueue(it)}.toList()
-        val positions = intArrayOf(0, 0, 0, 0, 0)
         var output = 0
         while (true) {
             for (i in intComputers.indices) {
                 inputQueues[i].add(output.toLong())
-                val nextOutput = intComputers[i].nextOutput(inputQueues[i], positions[i], 0)
+                val nextOutput = intComputers[i].nextOutput(inputQueues[i])
                 if (nextOutput.done) {
                     return output
                 } else {
                     output = nextOutput.output!!.toInt()
-                    positions[i] = nextOutput.position
                 }
             }
         }

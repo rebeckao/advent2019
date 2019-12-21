@@ -14,37 +14,29 @@ class Day11SpacePolice {
         var robotPosition = Position(0, 0)
         var robotDirection = Direction.UP
 
-        var paintOutput = robot.nextOutput(toQueue(input.toLong()), 0, 0)
+        var paintOutput = robot.nextOutput(toQueue(input.toLong()))
         var paintInstruction = paintOutput.output!!.toInt()
         paintedPanels[robotPosition] = paintInstruction
-        var programPosition = paintOutput.position
-        var relativeBase = paintOutput.relativeBase
 
-        var directionOutput = robot.nextOutput(ArrayDeque<Long>(), programPosition, relativeBase)
+        var directionOutput = robot.nextOutput(ArrayDeque<Long>())
         var directionInstruction = directionOutput.output!!.toInt()
         robotDirection = newDirection(robotDirection, directionInstruction)
         robotPosition = newPosition(robotPosition, robotDirection)
-        programPosition = directionOutput.position
-        relativeBase = directionOutput.relativeBase
         while (true) {
-            paintOutput = robot.nextOutput(toQueue((paintedPanels[robotPosition] ?: 0).toLong()), programPosition, relativeBase)
+            paintOutput = robot.nextOutput(toQueue((paintedPanels[robotPosition] ?: 0).toLong()))
             if (paintOutput.done) {
                 break
             }
             paintInstruction = paintOutput.output!!.toInt()
             paintedPanels[robotPosition] = paintInstruction
-            programPosition = paintOutput.position
-            relativeBase = paintOutput.relativeBase
 
-            directionOutput = robot.nextOutput(ArrayDeque<Long>(), programPosition, relativeBase)
+            directionOutput = robot.nextOutput(ArrayDeque<Long>())
             if (directionOutput.done) {
                 break
             }
             directionInstruction = directionOutput.output!!.toInt()
             robotDirection = newDirection(robotDirection, directionInstruction)
             robotPosition = newPosition(robotPosition, robotDirection)
-            programPosition = directionOutput.position
-            relativeBase = directionOutput.relativeBase
         }
         return paintedPanels
     }

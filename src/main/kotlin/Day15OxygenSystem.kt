@@ -47,7 +47,7 @@ class Day15OxygenSystem(savedMap: List<String>) {
         map[robotPosition] = 'o'
         println("start position = (${robotPosition.first}, ${robotPosition.second})")
         val intComputer = IntComputer(program)
-        var output = intComputer.nextOutputWithProvider({ manualInput() }, 0, 0)
+        var output = intComputer.nextOutputWithProvider({ manualInput() })
         while (!output.done) {
             val nextTile = Pair(robotPosition.first + direction.first, robotPosition.second + direction.second)
             if (output.output!! == 0L) {
@@ -61,7 +61,7 @@ class Day15OxygenSystem(savedMap: List<String>) {
             } else {
                 throw IllegalStateException()
             }
-            output = intComputer.nextOutputWithProvider({ manualInput() }, output.position, output.relativeBase)
+            output = intComputer.nextOutputWithProvider({ manualInput() })
         }
     }
 
@@ -69,7 +69,7 @@ class Day15OxygenSystem(savedMap: List<String>) {
         map[robotPosition] = 'o'
         println("start position = (${robotPosition.first}, ${robotPosition.second})")
         val intComputer = IntComputer(program)
-        var output = intComputer.nextOutputWithProvider({ randomInput() }, 0, 0)
+        var output = intComputer.nextOutputWithProvider({ randomInput() })
         var steps = 0
         while (!output.done && steps < maxSteps) {
             steps ++
@@ -86,7 +86,7 @@ class Day15OxygenSystem(savedMap: List<String>) {
             } else {
                 throw IllegalStateException()
             }
-            output = intComputer.nextOutputWithProvider({ randomInput() }, output.position, output.relativeBase)
+            output = intComputer.nextOutputWithProvider({ randomInput() })
         }
         draw()
     }

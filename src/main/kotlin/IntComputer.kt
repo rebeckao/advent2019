@@ -1,29 +1,24 @@
 import java.util.*
 
 class IntComputer(private var program: LongArray) {
-
+    private var currentPosition = 0
+    private var relativeBase = 0
 
     fun nextOutput(
-        input: Queue<Long>,
-        startPosition: Int,
-        relativeBaseStart: Int
+        input: Queue<Long>
     ): CurrentState {
-        return nextOutputWithProvider({input.poll()}, startPosition, relativeBaseStart)
+        return nextOutputWithProvider({input.poll()})
     }
 
     fun nextOutputWithProvider(
-        inputProducer: () -> Long,
-        startPosition: Int,
-        relativeBaseStart: Int
+        inputProducer: () -> Long
     ): CurrentState {
-        var relativeBase = relativeBaseStart
-        var currentPosition = startPosition
         while (currentPosition < program.size) {
             val opCodeString = String.format("%05d", program[currentPosition])
             val currentOperation = opCodeString.substring(3)
 
             if (currentOperation == "99") {
-                return CurrentState(null, currentPosition, relativeBase, true)
+                return CurrentState(null, true)
             }
 
             if (currentOperation == "03") {
@@ -37,7 +32,7 @@ class IntComputer(private var program: LongArray) {
 
             if (currentOperation == "04") {
                 currentPosition += 2
-                return CurrentState(param1, currentPosition, relativeBase, false)
+                return CurrentState(param1, false)
             }
 
             if (currentOperation == "09") {
@@ -141,5 +136,5 @@ class IntComputer(private var program: LongArray) {
         }
     }
 
-    data class CurrentState(val output: Long?, val position: Int, val relativeBase: Int, val done: Boolean)
+    data class CurrentState(val output: Long?, val done: Boolean)
 }
