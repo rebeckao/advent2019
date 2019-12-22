@@ -1,4 +1,3 @@
-
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.nio.file.Files
@@ -82,4 +81,101 @@ internal class Day20DonutMazeTest {
         val map = Files.lines(Paths.get("./src/test/resources/day20.txt")).toList()
         assertEquals(588, Day20DonutMaze(map).shortestPath())
     }
+
+    @Test
+    fun shortestPathAccountingForRecursionExample0() {
+        val map = listOf(
+            "      A      ",
+            "      A      ",
+            "  ####.####  ",
+            "  ####.####  ",
+            "  ##  B  ##  ",
+            "  ##  C  ##  ",
+            "DE..BC   ##  ",
+            "  ##     ##  ",
+            "  #########  ",
+            "DE.......##  ",
+            "  ######.##  ",
+            "        Z    ",
+            "        Z    "
+        )
+        assertEquals(11, Day20DonutMaze(map).shortestPathAccountingForRecursion())
+    }
+
+    @Test
+    fun shortestPathAccountingForRecursionExample1() {
+        val map = listOf(
+            "         A           ",
+            "         A           ",
+            "  #######.#########  ",
+            "  #######.........#  ",
+            "  #######.#######.#  ",
+            "  #######.#######.#  ",
+            "  #######.#######.#  ",
+            "  #####  B    ###.#  ",
+            "BC...##  C    ###.#  ",
+            "  ##.##       ###.#  ",
+            "  ##...DE  F  ###.#  ",
+            "  #####    G  ###.#  ",
+            "  #########.#####.#  ",
+            "DE..#######...###.#  ",
+            "  #.#########.###.#  ",
+            "FG..#########.....#  ",
+            "  ###########.#####  ",
+            "             Z       ",
+            "             Z       "
+        )
+        assertEquals(26, Day20DonutMaze(map).shortestPathAccountingForRecursion())
+    }
+
+    @Test
+    fun shortestPathAccountingForRecursionExample2() {
+        val map = listOf(
+            "             Z L X W       C                 ",
+            "             Z P Q B       K                 ",
+            "  ###########.#.#.#.#######.###############  ",
+            "  #...#.......#.#.......#.#.......#.#.#...#  ",
+            "  ###.#.#.#.#.#.#.#.###.#.#.#######.#.#.###  ",
+            "  #.#...#.#.#...#.#.#...#...#...#.#.......#  ",
+            "  #.###.#######.###.###.#.###.###.#.#######  ",
+            "  #...#.......#.#...#...#.............#...#  ",
+            "  #.#########.#######.#.#######.#######.###  ",
+            "  #...#.#    F       R I       Z    #.#.#.#  ",
+            "  #.###.#    D       E C       H    #.#.#.#  ",
+            "  #.#...#                           #...#.#  ",
+            "  #.###.#                           #.###.#  ",
+            "  #.#....OA                       WB..#.#..ZH",
+            "  #.###.#                           #.#.#.#  ",
+            "CJ......#                           #.....#  ",
+            "  #######                           #######  ",
+            "  #.#....CK                         #......IC",
+            "  #.###.#                           #.###.#  ",
+            "  #.....#                           #...#.#  ",
+            "  ###.###                           #.#.#.#  ",
+            "XF....#.#                         RF..#.#.#  ",
+            "  #####.#                           #######  ",
+            "  #......CJ                       NM..#...#  ",
+            "  ###.#.#                           #.###.#  ",
+            "RE....#.#                           #......RF",
+            "  ###.###        X   X       L      #.#.#.#  ",
+            "  #.....#        F   Q       P      #.#.#.#  ",
+            "  ###.###########.###.#######.#########.###  ",
+            "  #.....#...#.....#.......#...#.....#.#...#  ",
+            "  #####.#.###.#######.#######.###.###.#.#.#  ",
+            "  #.......#.......#.#.#.#.#...#...#...#.#.#  ",
+            "  #####.###.#####.#.#.#.#.###.###.#.###.###  ",
+            "  #.......#.....#.#...#...............#...#  ",
+            "  #############.#.#.###.###################  ",
+            "               A O F   N                     ",
+            "               A A D   M                     "
+        )
+        assertEquals(396, Day20DonutMaze(map).shortestPathAccountingForRecursion())
+    }
+
+    @Test
+    fun shortestPathAccountingForRecursion() {
+        val map = Files.lines(Paths.get("./src/test/resources/day20.txt")).toList()
+        assertEquals(6834, Day20DonutMaze(map).shortestPathAccountingForRecursion())
+    }
+
 }
