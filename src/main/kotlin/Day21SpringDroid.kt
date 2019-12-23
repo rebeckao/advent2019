@@ -11,11 +11,6 @@ class Day21SpringDroid(val program: LongArray) {
             }
             input.add(10)
         }
-        input.add('W'.toLong())
-        input.add('A'.toLong())
-        input.add('L'.toLong())
-        input.add('K'.toLong())
-        input.add(10)
 
         var output = intComputer.nextOutput(input)
         while (!output.done) {
