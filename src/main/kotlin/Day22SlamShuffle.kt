@@ -1,4 +1,4 @@
-import kotlin.math.roundToInt
+import java.math.BigInteger
 
 class Day22SlamShuffle {
     fun cardIndexAfterShuffles(startIndex: Int, deckSize: Int, shuffles: List<String>): Int {
@@ -82,18 +82,9 @@ class Day22SlamShuffle {
     }
 
     private fun reverseDealWithIncrement(index: Long, deckSize: Long, increment: Int): Long {
-        val placeInBucket = index % increment
-        val offsetBetweenRounds = deckSize % increment
-        var round = 0
-        for (a in 1 until increment) {
-            val doubleRound = (increment * a - placeInBucket) * 1.0f / offsetBetweenRounds
-            if (doubleRound % 1.0f < 0.0001f) {
-                round = doubleRound.roundToInt() % increment
-                break
-            }
-        }
-
-        val initialIndex = (round * deckSize + index) / increment
+        val incrementBigInt = BigInteger.valueOf(increment.toLong())
+        val decksizeBigInt = BigInteger.valueOf(deckSize)
+        val initialIndex = (index * (incrementBigInt.modInverse(decksizeBigInt)).toLong()) % deckSize
         return initialIndex
     }
 }
