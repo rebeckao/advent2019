@@ -2,6 +2,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import java.math.BigInteger
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.streams.toList
@@ -36,7 +37,7 @@ internal class Day22SlamShuffleTest {
         "deal with increment 3,8,4"
 
     )
-    fun cardIndexAfterShuffles(shuffles: String, startIndex: Int, expected: Int) {
+    fun cardIndexAfterShuffles(shuffles: String, startIndex: Long, expected: Long) {
         assertEquals(expected, Day22SlamShuffle().cardIndexAfterShuffles(startIndex, 10, shuffles.split("\\n")))
     }
 
@@ -90,18 +91,26 @@ internal class Day22SlamShuffleTest {
         "deal with increment 7,7,1",
         "deal with increment 7,8,4",
         "deal with increment 7,9,7"
-
     )
-    fun cardIndexAfterReverseShufflesExamples(shuffles: String, endIndex: Long, expected: Long) {
+    fun cardIndexAfterReverseShufflesExamples(shuffleString: String, endIndex: Long, expected: BigInteger) {
+        val shuffles = shuffleString.split("\\n")
         assertEquals(
             expected,
-            Day22SlamShuffle().cardIndexBeforeShuffles(endIndex, 10, 1, shuffles.split("\\n"))
+            Day22SlamShuffle().cardIndexBeforeShuffles(endIndex, 10, shuffles)
         )
     }
 
-//    @Test
+    @Test
     fun cardIndexAfterShufflesInHugeDeck() {
         val shuffles = Files.lines(Paths.get("./src/test/resources/day22.txt")).toList()
-        assertEquals(0, Day22SlamShuffle().cardIndexBeforeShuffles(2020, 119315717514047, 101741582076661, shuffles))
+        assertEquals(
+            BigInteger.valueOf(43781998578719),
+            Day22SlamShuffle().giveUpUseRedditMath(
+                BigInteger.valueOf(2020),
+                BigInteger.valueOf(119315717514047),
+                BigInteger.valueOf(101741582076661),
+                shuffles
+            )
+        )
     }
 }
