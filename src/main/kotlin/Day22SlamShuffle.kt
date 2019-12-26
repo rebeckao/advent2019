@@ -13,12 +13,7 @@ class Day22SlamShuffle {
     private fun indexAfterShuffle(index: Int, deckSize: Int, shuffle: String): Int {
         when {
             shuffle == "deal into new stack" -> return deckSize - index - 1
-            shuffle.startsWith("cut -") -> return cutFromEnd(
-                index.toLong(),
-                deckSize.toLong(),
-                shuffle.substring(5).toInt()
-            ).toInt()
-            shuffle.startsWith("cut ") -> return cutFromBeginning(
+            shuffle.startsWith("cut ") -> return cut(
                 index.toLong(),
                 deckSize.toLong(),
                 shuffle.substring(4).toInt()
@@ -32,23 +27,12 @@ class Day22SlamShuffle {
         throw IllegalStateException()
     }
 
-    private fun cutFromBeginning(index: Long, deckSize: Long, numberToCut: Int): Long {
-        if (index < numberToCut) {
-            return (deckSize - numberToCut) + index
-        }
-        return index - numberToCut
-    }
-
-    private fun cutFromEnd(index: Long, deckSize: Long, numberToCut: Int): Long {
-        if (index < (deckSize - numberToCut)) {
-            return index + numberToCut
-        }
-        return index - (deckSize - numberToCut)
+    private fun cut(index: Long, deckSize: Long, numberToCut: Int): Long {
+        return (index - numberToCut + deckSize) % deckSize
     }
 
     private fun dealWithIncrement(index: Int, deckSize: Int, increment: Int): Int {
-        val newIndex = ((index) * increment) % deckSize
-        return newIndex
+        return (index * increment) % deckSize
     }
 
     fun cardIndexBeforeShuffles(
@@ -78,6 +62,7 @@ class Day22SlamShuffle {
             } else {
                 visitedShuffles.put(shuffleResult, i)
             }
+            println("index: ${startIndex} -> ${index}, diff ${index - startIndex}")
             i--
         }
         return index
@@ -86,8 +71,7 @@ class Day22SlamShuffle {
     private fun indexAfterReverseShuffle(index: Long, deckSize: Long, shuffle: String): Long {
         when {
             shuffle == "deal into new stack" -> return deckSize - index - 1
-            shuffle.startsWith("cut -") -> return reverseCutFromEnd(index, deckSize, shuffle.substring(5).toInt())
-            shuffle.startsWith("cut ") -> return reverseCutFromBeginning(index, deckSize, shuffle.substring(4).toInt())
+            shuffle.startsWith("cut ") -> return cut(index, deckSize, -shuffle.substring(4).toInt())
             shuffle.startsWith("deal with increment ") -> return reverseDealWithIncrement(
                 index,
                 deckSize,
@@ -95,14 +79,6 @@ class Day22SlamShuffle {
             )
         }
         throw IllegalStateException()
-    }
-
-    private fun reverseCutFromBeginning(index: Long, deckSize: Long, numberToCut: Int): Long {
-        return cutFromEnd(index, deckSize, numberToCut)
-    }
-
-    private fun reverseCutFromEnd(index: Long, deckSize: Long, numberToCut: Int): Long {
-        return cutFromBeginning(index, deckSize, numberToCut)
     }
 
     private fun reverseDealWithIncrement(index: Long, deckSize: Long, increment: Int): Long {
