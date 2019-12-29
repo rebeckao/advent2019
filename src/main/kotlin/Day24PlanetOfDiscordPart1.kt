@@ -1,15 +1,14 @@
 import kotlin.math.pow
 
-class Day24PlanetOfDiscord(initialState: List<String>) {
-    private var state: MutableList<MutableList<Boolean>> = ArrayList<MutableList<Boolean>>().toMutableList()
+class Day24PlanetOfDiscordPart1(initialState: List<String>) {
+    private var state: Array<BooleanArray>
 
     init {
+        state = Array(5) { BooleanArray(5) { false } }
         for (y in initialState.indices) {
-            val rowList = ArrayList<Boolean>()
-            state.add(rowList)
             val row = initialState[y]
             for (x in row.indices) {
-                rowList.add(row[x] == '#')
+                state[y][x] = row[x] == '#'
             }
         }
     }
@@ -19,7 +18,7 @@ class Day24PlanetOfDiscord(initialState: List<String>) {
         val visitedStates = HashSet<String>()
         while (true) {
             draw()
-            val newState: MutableList<MutableList<Boolean>> = state.map { it.toMutableList() }.toMutableList()
+            val newState = Array(5) { BooleanArray(5) { false } }
             for (y in newState.indices) {
                 for (x in newState[y].indices) {
                     val surroundingBugs = possibleDirections.filter { isBug(x + it.first, y + it.second) }.count()
@@ -51,8 +50,8 @@ class Day24PlanetOfDiscord(initialState: List<String>) {
         println()
     }
 
-    private fun biodiversityOf(state: List<List<Boolean>>): Long {
-        val asOneList = state.flatten()
+    private fun biodiversityOf(state: Array<BooleanArray>): Long {
+        val asOneList = state.flatMap { it.toList() }
         return asOneList.indices
             .filter { asOneList[it] }
             .map { it.toDouble() }
@@ -61,7 +60,7 @@ class Day24PlanetOfDiscord(initialState: List<String>) {
             .toLong()
     }
 
-    private fun hash(state: List<List<Boolean>>): String {
+    private fun hash(state: Array<BooleanArray>): String {
         return state.joinToString("") { it.joinToString("") }
     }
 
